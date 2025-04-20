@@ -31,6 +31,10 @@ dependencies {
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	annotationProcessor 'org.projectlombok:lombok'
 
+	//SECURITY
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	testImplementation 'org.springframework.security:spring-security-test'
+
 	//JWT
 	implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.37.3'
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'

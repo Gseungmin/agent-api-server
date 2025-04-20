@@ -1,6 +1,6 @@
 package com.dft.mom.domain.service;
 
-import com.dft.mom.web.exception.member.ExcelException;
+import com.dft.mom.web.exception.excel.ExcelException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.dft.mom.domain.dto.excel.ExcelPostDto;
