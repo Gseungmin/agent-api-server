@@ -42,7 +42,7 @@ public class BabyController {
     }
 
     /*아이정보 업데이트*/
-    @PutMapping()
+    @PatchMapping()
     public BabyResponseDto updateBaby(Authentication authentication, HttpServletRequest request,
                                       @RequestBody BabyUpdateRequestDto dto) {
         validateAuthentication(authentication, request);
@@ -52,7 +52,7 @@ public class BabyController {
         return babyService.updateBaby(baby, dto);
     }
 
-    /*아이정보 업데이트*/
+    /*아이 타입 정보 업데이트 - 임신중에서 육아중으로 변경*/
     @PatchMapping("/type")
     public BabyResponseDto updateBabyType(Authentication authentication, HttpServletRequest request,
                                       @RequestBody BabyTypeUpdateRequestDto dto) {
