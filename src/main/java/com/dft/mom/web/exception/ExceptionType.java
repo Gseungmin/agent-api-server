@@ -31,6 +31,16 @@ public enum ExceptionType {
     UN_AUTH_NON_MEMBER(10005, "로그인 먼저 해주세요"),
 
     /**
+     * FAMILY Exception
+     * */
+    FAMILY_NOT_EXIST( 20000, "가족 정보가 존재하지 않아요. 관리자에게 문의해주세요"),
+    BABY_NOT_EXIST(20001, "아이 정보가 존재하지 않아요. 관리자에게 문의해주세요"),
+    UN_AUTH_BABY(20002, "아이에 접근 권한이 존재하지 않아요. 관리자에게 문의해주세요"),
+    FAMILY_CODE_INVALID(20003, "코드 정보가 잘못되었어요"),
+    ALREADY_CONNECTED_FAMILY(20004, "이미 연결되었어요"),
+    FAIL_CREATE_FAMILY_CODE( 20005, "가족 코드 생성에 실패하였습니다."),
+
+    /**
      * EXCEL Exception
      * */
     EXCEL_NOT_FOUND( 70000, "해당 엑셀파일이 존재하지 않습니다."),

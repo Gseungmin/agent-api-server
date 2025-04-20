@@ -52,6 +52,9 @@ public class BlacklistFilter implements Filter {
 
     private boolean isValidUrl(String requestUri) {
         if (requestUri.startsWith("/auth")
+                || requestUri.startsWith("/my")
+                || requestUri.startsWith("/baby")
+                || requestUri.startsWith("/family")
                 || requestUri.startsWith("/error")) {
             return true;
         }
