@@ -11,6 +11,8 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.util.Base64;
 
+import static com.dft.mom.web.exception.ExceptionType.ENCRYPT_FAIL;
+
 @Component
 @RequiredArgsConstructor
 public class CryptoUtil {

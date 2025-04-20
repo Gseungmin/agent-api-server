@@ -26,7 +26,7 @@ public class Auth extends BaseEntity {
 
     @Id
     @GeneratedValue(generator = "auth_seq_id")
-    @GenericGenerator(name = "auth_seq_id", strategy = "com.dft.baby.domain.generator.AuthIDGenerator")
+    @GenericGenerator(name = "auth_seq_id", strategy = "com.dft.mom.domain.generator.AuthIDGenerator")
     @Column(name = "authId")
     private Long id;
 

@@ -27,7 +27,7 @@ public class Member extends BaseEntity {
 
     @Id
     @GeneratedValue(generator = "member_seq_id")
-    @GenericGenerator(name = "member_seq_id", strategy = "com.dft.baby.domain.generator.MemberIDGenerator")
+    @GenericGenerator(name = "member_seq_id", strategy = "com.dft.mom.domain.generator.MemberIDGenerator")
     @Column(name = "memberId")
     private Long id;
 
