@@ -1,7 +1,7 @@
 package com.dft.mom.web.exception.handler;
 
 import com.dft.mom.web.exception.ErrorResult;
-import com.dft.mom.web.exception.member.ExcelException;
+import com.dft.mom.web.exception.excel.ExcelException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
