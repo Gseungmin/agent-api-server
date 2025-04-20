@@ -2,7 +2,7 @@ package com.dft.mom.domain.util;
 
 import java.util.List;
 
-public class BabyConstants {
+public class PostConstants {
 
     // POST PRIORITY
     public static final int PRIORITY_LOW = 0;
