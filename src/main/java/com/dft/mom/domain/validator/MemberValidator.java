@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static com.dft.mom.domain.util.EntityConstants.*;
+import static com.dft.mom.domain.validator.CommonValidator.validateId;
 import static com.dft.mom.web.exception.ExceptionType.*;
 
 public class MemberValidator {
@@ -33,6 +34,10 @@ public class MemberValidator {
     }
 
     public static void validateCreateMember(MemberCreateRequestDto dto) {
+        if (dto.getAccessToken() == null || dto.getAccessToken().isEmpty()) {
+            throw new MemberException(SOCIAL_TOKEN_NEED.getCode(), SOCIAL_TOKEN_NEED.getErrorMessage());
+        }
+
         validateRelation(dto.getRelation());
         validateAgree(dto.getAgree());
         validateName(dto.getName());
@@ -43,12 +48,28 @@ public class MemberValidator {
     }
 
     public static void validateCreateAppleMember(MemberAppleCreateRequestDto dto) {
+        if (dto.getIdToken() == null) {
+            throw new MemberException(SOCIAL_TOKEN_NEED.getCode(), SOCIAL_TOKEN_NEED.getErrorMessage());
+        }
+
         validateRelation(dto.getRelation());
         validateAgree(dto.getAgree());
         validateName(dto.getName());
 
         if (dto.getCode() == null || dto.getCode().trim().isEmpty()) {
             validatePregnancyAndParentingLists(dto.getPregnancyList(), dto.getParentingList());
+        }
+    }
+
+    public static void validateRelation(Integer relation) {
+        if (relation == null || (!relation.equals(FEMALE) && !relation.equals(MALE) && !relation.equals(FAMILY_ETC))) {
+            throw new MemberException(MEMBER_CREATE_RELATION_INVALID.getCode(), MEMBER_CREATE_RELATION_INVALID.getErrorMessage());
+        }
+    }
+
+    public static void validateName(String name) {
+        if (name == null || name.trim().isEmpty() || name.length() > MAX_NAME) {
+            throw new MemberException(MEMBER_CREATE_NAME_INVALID.getCode(), MEMBER_CREATE_NAME_INVALID.getErrorMessage());
         }
     }
 
@@ -65,6 +86,82 @@ public class MemberValidator {
         LocalDate fourteenYearsAgo = today.minusYears(14);
 
         return !birthDate.isAfter(fourteenYearsAgo);
+    }
+
+    public static void validateAgree(Integer agree) {
+        if (agree == null || (!agree.equals(AGREE_ALL) && !agree.equals(AGREE_ALL_WITH_MARKETING))) {
+            throw new MemberException(MEMBER_CREATE_AGREE_INVALID.getCode(), MEMBER_CREATE_AGREE_INVALID.getErrorMessage());
+        }
+    }
+
+    public static void validatePregnancyAndParentingLists(List<PregnancyCreateRequestDto> pregnancyList,
+                                                          List<ParentingCreateRequestDto> parentingList) {
+        boolean hasPregnancy = pregnancyList != null && !pregnancyList.isEmpty();
+        boolean hasBaby = parentingList != null && !parentingList.isEmpty();
+
+        if (hasPregnancy == hasBaby) {
+            throw new MemberException(MEMBER_CREATE_BABY_LIST_INVALID.getCode(), MEMBER_CREATE_BABY_LIST_INVALID.getErrorMessage());
+        }
+
+        if (hasPregnancy) {
+            validatePregnancyList(pregnancyList);
+        }
+
+        if (hasBaby) {
+            validateParentingList(parentingList);
+        }
+    }
+
+    public static void validatePregnancyList(List<PregnancyCreateRequestDto> pregnancyList) {
+        if (pregnancyList.size() > MAX_BABY_CREATE) {
+            throw new MemberException(MEMBER_CREATE_MAX_BABY_LIST_INVALID.getCode(), MEMBER_CREATE_MAX_BABY_LIST_INVALID.getErrorMessage());
+        }
+
+        for (PregnancyCreateRequestDto pregnancy : pregnancyList) {
+            validatePregnancyItem(pregnancy);
+        }
+    }
+
+    private static void validateParentingList(List<ParentingCreateRequestDto> babyList) {
+        if (babyList.size() > MAX_BABY_CREATE) {
+            throw new MemberException(MEMBER_CREATE_MAX_BABY_LIST_INVALID.getCode(), MEMBER_CREATE_MAX_BABY_LIST_INVALID.getErrorMessage());
+        }
+
+        for (ParentingCreateRequestDto baby : babyList) {
+            validateBabyItem(baby);
+        }
+    }
+
+    private static void validatePregnancyItem(PregnancyCreateRequestDto pregnancy) {
+        if (pregnancy.getName() == null || pregnancy.getName().isEmpty() || pregnancy.getName().length() > MAX_NAME) {
+            throw new MemberException(MEMBER_CREATE_BABY_INFO_INVALID.getCode(), MEMBER_CREATE_BABY_INFO_INVALID.getErrorMessage());
+        }
+
+        if (pregnancy.getExpectedBirth() == null && pregnancy.getLastMenstrual() == null) {
+            throw new MemberException(MEMBER_CREATE_BABY_INFO_INVALID.getCode(), MEMBER_CREATE_BABY_INFO_INVALID.getErrorMessage());
+        }
+
+        if (pregnancy.getExpectedBirth() != null && pregnancy.getExpectedBirth().isBefore(LocalDate.now())) {
+            throw new MemberException(MEMBER_CREATE_BABY_INFO_INVALID.getCode(), MEMBER_CREATE_BABY_INFO_INVALID.getErrorMessage());
+        }
+
+        if (pregnancy.getLastMenstrual() != null && pregnancy.getLastMenstrual().isAfter(LocalDate.now())) {
+            throw new MemberException(MEMBER_CREATE_BABY_INFO_INVALID.getCode(), MEMBER_CREATE_BABY_INFO_INVALID.getErrorMessage());
+        }
+    }
+
+    private static void validateBabyItem(ParentingCreateRequestDto baby) {
+        if (baby.getName() == null || baby.getName().isEmpty() || baby.getName().length() > MAX_NAME) {
+            throw new MemberException(MEMBER_CREATE_BABY_INFO_INVALID.getCode(), MEMBER_CREATE_BABY_INFO_INVALID.getErrorMessage());
+        }
+
+        if (baby.getBirth() == null || baby.getBirth().isAfter(LocalDate.now())) {
+            throw new MemberException(MEMBER_CREATE_BABY_INFO_INVALID.getCode(), MEMBER_CREATE_BABY_INFO_INVALID.getErrorMessage());
+        }
+
+        if (baby.getGender() == null || (!baby.getGender().equals(FEMALE) && !baby.getGender().equals(MALE))) {
+            throw new MemberException(MEMBER_CREATE_BABY_INFO_INVALID.getCode(), MEMBER_CREATE_BABY_INFO_INVALID.getErrorMessage());
+        }
     }
 
     public static void validateUpdateMember(MemberUpdateRequestDto dto) {
@@ -96,110 +193,9 @@ public class MemberValidator {
         }
     }
 
-    private static void validateRelation(Integer relation) {
-        if (relation == null || (!relation.equals(FEMALE) && !relation.equals(MALE) && !relation.equals(FAMILY_ETC))) {
-            throw new MemberException(MEMBER_CREATE_RELATION_INVALID.getCode(), MEMBER_CREATE_RELATION_INVALID.getErrorMessage());
-        }
-    }
-
-    private static void validateName(String name) {
-        if (name == null || name.trim().isEmpty() || name.length() > MAX_NAME) {
-            throw new MemberException(MEMBER_CREATE_NAME_INVALID.getCode(), MEMBER_CREATE_NAME_INVALID.getErrorMessage());
-        }
-    }
-
-    private static void validateAgree(Integer agree) {
-        if (agree == null || (!agree.equals(AGREE_ALL) && !agree.equals(AGREE_ALL_WITH_MARKETING))) {
-            throw new MemberException(MEMBER_CREATE_AGREE_INVALID.getCode(), MEMBER_CREATE_AGREE_INVALID.getErrorMessage());
-        }
-    }
-
-    public static void validatePregnancyAndParentingLists(List<PregnancyCreateRequestDto> pregnancyList,
-                                                          List<ParentingCreateRequestDto> parentingList) {
-        boolean hasPregnancy = pregnancyList != null && !pregnancyList.isEmpty();
-        boolean hasBaby = parentingList != null && !parentingList.isEmpty();
-
-        if (hasPregnancy == hasBaby) {
-            throw new MemberException(MEMBER_CREATE_BABY_LIST_INVALID.getCode(), MEMBER_CREATE_BABY_LIST_INVALID.getErrorMessage());
-        }
-
-        if (hasPregnancy) {
-            validatePregnancyList(pregnancyList);
-        }
-
-        if (hasBaby) {
-            validateParentingList(parentingList);
-        }
-    }
-
-    private static void validatePregnancyList(List<PregnancyCreateRequestDto> pregnancyList) {
-        if (pregnancyList.size() > MAX_BABY_CREATE) {
-            throw new MemberException(MEMBER_CREATE_MAX_BABY_LIST_INVALID.getCode(), MEMBER_CREATE_MAX_BABY_LIST_INVALID.getErrorMessage());
-        }
-
-        for (PregnancyCreateRequestDto pregnancy : pregnancyList) {
-            validatePregnancyItem(pregnancy);
-        }
-    }
-
-    private static void validateParentingList(List<ParentingCreateRequestDto> babyList) {
-        if (babyList.size() > MAX_BABY_CREATE) {
-            throw new MemberException(MEMBER_CREATE_MAX_BABY_LIST_INVALID.getCode(), MEMBER_CREATE_MAX_BABY_LIST_INVALID.getErrorMessage());
-        }
-
-        for (ParentingCreateRequestDto baby : babyList) {
-            validateBabyItem(baby);
-        }
-    }
-
-    private static void validatePregnancyItem(PregnancyCreateRequestDto pregnancy) {
-        if (pregnancy == null) {
-            throw new MemberException(MEMBER_CREATE_BABY_LIST_INVALID.getCode(), MEMBER_CREATE_BABY_LIST_INVALID.getErrorMessage());
-        }
-
-        if (pregnancy.getName() == null || pregnancy.getName().isEmpty() || pregnancy.getName().length() > MAX_NAME) {
-            throw new MemberException(MEMBER_CREATE_BABY_INFO_INVALID.getCode(), MEMBER_CREATE_BABY_INFO_INVALID.getErrorMessage());
-        }
-
-        if ((pregnancy.getExpectedBirth() == null && pregnancy.getLastMenstrual() == null)) {
-            throw new MemberException(MEMBER_CREATE_BABY_INFO_INVALID.getCode(), MEMBER_CREATE_BABY_INFO_INVALID.getErrorMessage());
-        }
-
-        if (pregnancy.getExpectedBirth() != null && pregnancy.getExpectedBirth().isBefore(LocalDate.now())) {
-            throw new MemberException(MEMBER_CREATE_BABY_INFO_INVALID.getCode(), MEMBER_CREATE_BABY_INFO_INVALID.getErrorMessage());
-        }
-
-        if (pregnancy.getLastMenstrual() != null && pregnancy.getLastMenstrual().isAfter(LocalDate.now())) {
-            throw new MemberException(MEMBER_CREATE_BABY_INFO_INVALID.getCode(), MEMBER_CREATE_BABY_INFO_INVALID.getErrorMessage());
-        }
-    }
-
-    private static void validateBabyItem(ParentingCreateRequestDto baby) {
-        if (baby == null) {
-            throw new MemberException(MEMBER_CREATE_BABY_LIST_INVALID.getCode(), MEMBER_CREATE_BABY_LIST_INVALID.getErrorMessage());
-        }
-
-        if (baby.getName() == null || baby.getName().isEmpty() || baby.getName().length() > MAX_NAME) {
-            throw new MemberException(MEMBER_CREATE_BABY_INFO_INVALID.getCode(), MEMBER_CREATE_BABY_INFO_INVALID.getErrorMessage());
-        }
-
-        if (baby.getBirth() == null || baby.getBirth().isAfter(LocalDate.now())) {
-            throw new MemberException(MEMBER_CREATE_BABY_INFO_INVALID.getCode(), MEMBER_CREATE_BABY_INFO_INVALID.getErrorMessage());
-        }
-
-        if (baby.getGender() == null || (!baby.getGender().equals(FEMALE) && !baby.getGender().equals(MALE))) {
-            throw new MemberException(MEMBER_CREATE_BABY_INFO_INVALID.getCode(), MEMBER_CREATE_BABY_INFO_INVALID.getErrorMessage());
-        }
-    }
-
     public static void validateUpdateBaby(BabyUpdateRequestDto dto) {
-        if (dto.getId() == null) {
-            throw new FamilyException(ID_INVALID.getCode(), ID_INVALID.getErrorMessage());
-        }
-
-        if (dto.getFamilyId() == null) {
-            throw new FamilyException(ID_INVALID.getCode(), ID_INVALID.getErrorMessage());
-        }
+        validateId(dto.getId());
+        validateId(dto.getFamilyId());
 
         if (dto.getLastMenstrual() != null && dto.getLastMenstrual().isAfter(LocalDate.now())) {
             throw new FamilyException(BABY_UPDATE_BIRTH_INVALID.getCode(), BABY_UPDATE_BIRTH_INVALID.getErrorMessage());
@@ -229,13 +225,8 @@ public class MemberValidator {
     }
 
     public static void validateUpdateBabyType(BabyTypeUpdateRequestDto dto) {
-        if (dto.getId() == null) {
-            throw new FamilyException(BABY_UPDATE_TYPE_INVALID.getCode(), BABY_UPDATE_TYPE_INVALID.getErrorMessage());
-        }
-
-        if (dto.getFamilyId() == null) {
-            throw new FamilyException(BABY_UPDATE_TYPE_INVALID.getCode(), BABY_UPDATE_TYPE_INVALID.getErrorMessage());
-        }
+        validateId(dto.getId());
+        validateId(dto.getFamilyId());
 
         if (dto.getType() == null || dto.getType() < 0 || dto.getType() > 1) {
             throw new FamilyException(BABY_UPDATE_TYPE_INVALID.getCode(), BABY_UPDATE_TYPE_INVALID.getErrorMessage());

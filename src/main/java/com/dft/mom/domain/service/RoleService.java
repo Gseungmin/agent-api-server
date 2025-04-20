@@ -11,8 +11,7 @@ import java.util.Objects;
 
 import static com.dft.mom.domain.util.EntityConstants.ADMIN_STR;
 import static com.dft.mom.domain.util.EntityConstants.NON_MEMBER_STR;
-import static com.dft.mom.web.exception.ExceptionType.ADMIN_ONLY;
-import static com.dft.mom.web.exception.ExceptionType.MEMBER_NOT_EXIST;
+import static com.dft.mom.web.exception.ExceptionType.*;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +25,7 @@ public class RoleService {
 
     public void validateNon(String role) {
         if (Objects.equals(role, NON_MEMBER_STR)) {
-            throw new MemberException(ADMIN_ONLY.getCode(), ADMIN_ONLY.getErrorMessage());
+            throw new MemberException(UN_AUTH_NON_MEMBER.getCode(), UN_AUTH_NON_MEMBER.getErrorMessage());
         }
     }
 

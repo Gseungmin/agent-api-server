@@ -1,6 +1,9 @@
 package com.dft.mom.domain.function;
 
+import com.dft.mom.web.exception.member.MemberException;
 import jakarta.servlet.http.HttpServletRequest;
+
+import static com.dft.mom.web.exception.ExceptionType.MEMBER_NOT_EXIST;
 
 public class FunctionUtil {
     public static String getToken(HttpServletRequest request) {
@@ -22,5 +25,13 @@ public class FunctionUtil {
             }
         }
         return request.getRemoteAddr();
+    }
+
+    public static Long parseLong(String id) {
+        try {
+            return Long.parseLong(id);
+        } catch (NumberFormatException e) {
+            throw new MemberException(MEMBER_NOT_EXIST.getCode(), MEMBER_NOT_EXIST.getErrorMessage());
+        }
     }
 }

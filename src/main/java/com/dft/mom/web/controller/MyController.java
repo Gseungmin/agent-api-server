@@ -4,7 +4,6 @@ import com.dft.mom.domain.dto.member.req.MemberUpdateRequestDto;
 import com.dft.mom.domain.dto.member.res.MemberResponseDto;
 import com.dft.mom.domain.dto.member.res.MemberUpdateResponseDto;
 import com.dft.mom.domain.entity.member.Member;
-import com.dft.mom.domain.service.BabyService;
 import com.dft.mom.domain.service.MemberService;
 import com.dft.mom.domain.service.RoleService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,8 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import static com.dft.mom.domain.function.FunctionUtil.parseLong;
 import static com.dft.mom.domain.validator.MemberValidator.*;
-import static java.lang.Long.parseLong;
 
 
 @RestController

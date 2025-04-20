@@ -51,6 +51,7 @@ public enum ExceptionType {
      * DTO Exception
      * */
     ID_INVALID( 80000, "다시 시도해주세요."),
+    SOCIAL_TOKEN_NEED( 80000, "소셜 로그인을 진행할 수 없어요. 잠시후 다시 시도해주세요"),
     MEMBER_CREATE_NAME_INVALID( 80000, "마미님의 이름을 다시 설정해주세요."),
     MEMBER_CREATE_RELATION_INVALID( 80000, "아이와의 관계를 다시 설정해주세요."),
     MEMBER_CREATE_AGREE_INVALID( 80000, "약관 동의 항목을 다시 확인해주세요."),

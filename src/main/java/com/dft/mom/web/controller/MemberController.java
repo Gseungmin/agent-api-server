@@ -20,10 +20,10 @@ import java.util.Objects;
 import java.util.UUID;
 
 import static com.dft.mom.domain.function.FunctionUtil.getToken;
+import static com.dft.mom.domain.function.FunctionUtil.parseLong;
 import static com.dft.mom.domain.util.CommonConstants.REFRESH_TOKEN;
 import static com.dft.mom.domain.util.EntityConstants.NON_MEMBER_STR;
 import static com.dft.mom.domain.validator.MemberValidator.*;
-import static java.lang.Long.parseLong;
 
 @RestController
 @RequiredArgsConstructor

@@ -10,8 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import static com.dft.mom.domain.function.FunctionUtil.parseLong;
 import static com.dft.mom.domain.validator.MemberValidator.validateAuthentication;
-import static java.lang.Long.parseLong;
 
 @RestController
 @RequiredArgsConstructor
