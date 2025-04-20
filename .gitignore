@@ -6,6 +6,7 @@ build/
 !**/src/test/**/build/
 
 src/main/resources/json/**
+src/main/resources/excel/**
 
 ### STS ###
 .apt_generated

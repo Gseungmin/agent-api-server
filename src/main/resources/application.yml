@@ -1,0 +1,48 @@
+server:
+  id: 1
+  type: ${SERVER_TYPE:prod}
+
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/momagent}
+    username: ${SPRING_DATASOURCE_USERNAME:momagent}
+    password: ${SPRING_DATASOURCE_PASSWORD:password}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: ${RESTART:create}
+      auto_quote_keyword: true
+
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        format_sql: true
+        default_batch_fetch_size: 100
+
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      ssl:
+        enabled: ${REDIS_SSL:false}
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.type: debug
+    com.zaxxer.hikari.HikariConfig: DEBUG
+    com.zaxxer.hikari: TRACE
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+jwt:
+  secret: ${JWT_SECRET:AGVeqC3DaElzFlY3JKdEtlYLJldEtMNOeBNlY3JldEtleQ==}
+
+crypto:
+  secret-key: ${CRYPTO_SECRET_KEY:12345678901234567890123456789012}
+  init-vector: ${CRYPTO_INIT_VECTOR:agentTest1234567}
