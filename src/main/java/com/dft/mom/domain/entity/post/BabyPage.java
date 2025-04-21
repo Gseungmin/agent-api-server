@@ -11,6 +11,8 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.dft.mom.domain.util.EntityConstants.DEFAULT_PAGE_VERSION;
+
 @Entity
 @Getter
 @Setter
@@ -30,6 +32,8 @@ public class BabyPage extends BaseEntity {
 
     @Column(nullable = false)
     private Integer period;
+
+    private Integer version = DEFAULT_PAGE_VERSION;
 
     @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "babyPage")

@@ -18,11 +18,13 @@ public class PageResponseDto {
 
     private Integer pageType;
     private Integer pagePeriod;
+    private Integer version;
     private List<CategoryResponseDto> categoryList;
 
     public PageResponseDto(BabyPage babyPage, List<CategoryResponseDto> categoryList) {
         this.pagePeriod = babyPage.getPeriod();
         this.pageType = babyPage.getType();
+        this.version = babyPage.getVersion();
         this.categoryList = categoryList.stream().sorted(Comparator.comparing(CategoryResponseDto::getCategory)).toList();
     }
 }

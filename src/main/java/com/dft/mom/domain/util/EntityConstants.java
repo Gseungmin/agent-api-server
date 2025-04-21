@@ -30,4 +30,6 @@ public class EntityConstants {
     /*POST STATUS*/
     public static final Integer MAX_TITLE = 70;
     public static final Integer MAX_SUMMARY = 250;
+
+    public static final Integer DEFAULT_PAGE_VERSION = 0;
 }

@@ -7,6 +7,7 @@ import com.dft.mom.domain.entity.post.Post;
 import com.dft.mom.domain.repository.PageItemRepository;
 import com.dft.mom.domain.repository.PageRepository;
 import com.dft.mom.domain.repository.PostRepository;
+import com.dft.mom.domain.service.PageService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,7 @@ public class ExcelPostService {
     private final PageRepository pageRepository;
     private final PostRepository postRepository;
     private final PageItemRepository pageItemRepository;
+    private final PageService pageService;
 
     @PostConstruct
     public void init() throws IOException {
@@ -40,6 +42,7 @@ public class ExcelPostService {
      * 1. EXCEL 파싱 후 POST 생성 및 업데이트
      * 2. PAGE에 POST가 없다면 새로운 연결 생성, 만약 이미 연결되어있던 POST가 EXCEL에 없다면 연관관계 해제
      * 쿼리 : 1(페이지 조회) + 시트당 { 1(포스트와 연관관계된 페이지 아이템 조회) + 1(포스트 조회) + @(삽입 쿼리) }
+     * 3. 모든 정리 후에 페이지 버전 업데이트 및 캐시 업데이트
      * */
     public synchronized void createPost(String excelFilePath) throws IOException {
         Workbook workbook = loadWorkbook(excelFilePath);
@@ -50,6 +53,12 @@ public class ExcelPostService {
             validateRows(rows);
             List<Post> postList = updatePostList(rows);
             syncPageItems(postList, pageList, rows);
+        }
+
+        pageRepository.incrementAllVersions();
+        List<BabyPage> updatedPageList = getPageList();
+        for (BabyPage page : updatedPageList) {
+            pageService.putCachedPage(page.getType(), page.getPeriod());
         }
     }
 

@@ -170,4 +170,22 @@ public class PageServiceTest extends ServiceTest {
         //then
         assertThat(isCached).isEqualTo(false);
     }
+
+    @Test
+    @DisplayName("4. 페이지 버전 체크 - 해피 케이스 - 1. 페이지를 업데이트 하면 버전이 수정된다")
+    public void 페이지_버전_체크() throws IOException {
+        //given
+        PageResponseDto 페이지V1 = pageService.getCachedPage(TYPE_PREGNANCY_GUIDE, FETAL_PERIOD_5_8);
+        assertThat(페이지V1.getVersion()).isEqualTo(1);
+        flushAndClear();
+
+        //when
+        String route = "validate/post/success/post_valid_add.xlsx";
+        excelPostService.createPost(route);
+        flushAndClear();
+
+        //when
+        PageResponseDto 페이지V2 = pageService.getCachedPage(TYPE_PREGNANCY_GUIDE, FETAL_PERIOD_5_8);
+        assertThat(페이지V2.getVersion()).isEqualTo(2);
+    }
 }
