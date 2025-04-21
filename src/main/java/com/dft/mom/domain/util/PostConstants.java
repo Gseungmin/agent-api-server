@@ -14,8 +14,12 @@ public class PostConstants {
     public static final int HIGH_IMPORTANT = 1;
 
     // POST CAUTION
-    public static final int CAUTION = 0;
-    public static final int NOT_CAUTION = 1;
+    public static final int DEFAULT_POST = 0;
+    public static final int CAUTION = 1;
+
+    // SUB_ITEM QUN
+    public static final int NOT_QNA = 0;
+    public static final int QNA = 1;
 
     // NUTRITION TAG
     public static final int NUTRIENT_POST_TAG = 100;  // 영양 성분 페이지 기본 태그
