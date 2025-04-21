@@ -10,9 +10,7 @@ import com.dft.mom.domain.repository.PostRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +19,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static com.dft.mom.domain.function.ExcelFunctionUtil.loadWorkbook;
+import static com.dft.mom.domain.function.ExcelFunctionUtil.*;
 import static com.dft.mom.domain.validator.PostValidator.validateRows;
 
 @Service
@@ -75,21 +73,30 @@ public class ExcelPostService {
      * POST 엑셀 시트 파싱
      * */
     private List<PostRowDto> parseSheet(Sheet sheet) {
+        int lastRowNum = sheet.getLastRowNum();
         List<PostRowDto> itemList = new ArrayList<>();
-        Iterator<Row> it = sheet.iterator();
-        if (it.hasNext()) it.next();
 
-        while (it.hasNext()) {
-            Row row = it.next();
+        for (int rowIndex = 1; rowIndex <= lastRowNum; rowIndex++) {
+            Row row = sheet.getRow(rowIndex);
+            if (row == null) continue;
+
+            Cell idCell = row.getCell(0, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
+            if (idCell == null) {
+                break;
+            }
+
             PostRowDto dto = new PostRowDto();
-            dto.setItemId((long) row.getCell(0).getNumericCellValue());
-            dto.setTitle(row.getCell(1).getStringCellValue());
-            dto.setSummary(row.getCell(2).getStringCellValue());
-            dto.setType((int) row.getCell(3).getNumericCellValue());
-            dto.setStartPeriod((int) row.getCell(4).getNumericCellValue());
-            dto.setEndPeriod((int) row.getCell(5).getNumericCellValue());
-            dto.setCategory((int) row.getCell(6).getNumericCellValue());
-            dto.setCaution(row.getCell(7).getBooleanCellValue());
+
+            dto.setItemId(getLongNumericValue(row.getCell(0)));
+            dto.setTitle(getStringValue(row.getCell(1)));
+            dto.setSummary(getStringValue(row.getCell(2)));
+            dto.setType(getIntegerNumericValue(row.getCell(3)));
+            dto.setStartPeriod(getIntegerNumericValue(row.getCell(4)));
+            dto.setEndPeriod(getIntegerNumericValue(row.getCell(5)));
+            dto.setCategory(getIntegerNumericValue(row.getCell(6)));
+            Cell cautionCell = row.getCell(7);
+            dto.setCaution(cautionCell != null && cautionCell.getCellType() == CellType.BOOLEAN && cautionCell.getBooleanCellValue());
+
             itemList.add(dto);
         }
 

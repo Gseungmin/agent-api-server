@@ -10,7 +10,7 @@ import java.util.List;
 @Repository
 public interface PageItemRepository extends JpaRepository<BabyPageItem, Long> {
 
-    @Query("select bp from BabyPageItem bpi " +
+    @Query("select bpi from BabyPageItem bpi " +
             "join fetch bpi.post p " +
             "join fetch bpi.babyPage bp " +
             "where bpi.post.id in :idList")

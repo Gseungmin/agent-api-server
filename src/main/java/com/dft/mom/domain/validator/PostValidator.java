@@ -1,7 +1,7 @@
 package com.dft.mom.domain.validator;
 
 import com.dft.mom.domain.dto.baby.post.PostRowDto;
-import com.dft.mom.web.exception.member.MemberException;
+import com.dft.mom.web.exception.post.PageException;
 
 import java.util.List;
 
@@ -20,14 +20,17 @@ public class PostValidator {
         Long id = dto.getItemId();
         validateId(id);
         validateTitle(dto.getTitle(), id);
-        validateSummary(dto.getSummary(), id);
         validateType(dto.getType(), id);
         validatePeriod(dto.getStartPeriod(), dto.getEndPeriod(), dto.getType(), id);
+
+        if (dto.getCaution().equals(false)) {
+            validateSummary(dto.getSummary(), id);
+        }
     }
 
     public static void validateTitle(String title, Long id) {
         if (title == null || title.isEmpty() || title.length() > MAX_TITLE) {
-            throw new MemberException(
+            throw new PageException(
                     PAGE_TITLE_INVALID.getCode(),
                     "ID:" + id + " " + PAGE_TITLE_INVALID.getErrorMessage()
             );
@@ -36,7 +39,7 @@ public class PostValidator {
 
     public static void validateSummary(String summary, Long id) {
         if (summary == null || summary.isEmpty() || summary.length() > MAX_SUMMARY) {
-            throw new MemberException(
+            throw new PageException(
                     PAGE_SUMMARY_INVALID.getCode(),
                     "ID:" + id + " " + PAGE_SUMMARY_INVALID.getErrorMessage()
             );
@@ -45,7 +48,7 @@ public class PostValidator {
 
     public static void validateType(Integer type, Long id) {
         if (type == null || type < TYPE_PREGNANCY_GUIDE || type > TYPE_CHILDCARE_EXAM) {
-            throw new MemberException(
+            throw new PageException(
                     PAGE_TYPE_INVALID.getCode(),
                     "ID:" + id + " " + PAGE_TYPE_INVALID.getErrorMessage()
             );
@@ -55,7 +58,7 @@ public class PostValidator {
     public static void validatePeriod(Integer start, Integer end, Integer type, Long id) {
         switch (type) {
             case TYPE_PREGNANCY_EXAM, TYPE_CHILDCARE_EXAM:
-                if (start != 0 || end != 0) {
+                if (start != PERIOD_TOTAL || end != PERIOD_TOTAL) {
                     validatePeriod(id);
                 }
                 break;
@@ -77,7 +80,7 @@ public class PostValidator {
     }
 
     private static void validatePeriod(Long id) {
-        throw new MemberException(
+        throw new PageException(
                 PAGE_PERIOD_INVALID.getCode(),
                 "ID:" + id + " " + PAGE_PERIOD_INVALID.getErrorMessage()
         );
