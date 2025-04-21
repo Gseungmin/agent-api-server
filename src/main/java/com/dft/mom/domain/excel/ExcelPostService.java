@@ -55,6 +55,10 @@ public class ExcelPostService {
             syncPageItems(postList, pageList, rows);
         }
 
+        updateCachedItem();
+    }
+
+    public void updateCachedItem() {
         pageRepository.incrementAllVersions();
         List<BabyPage> updatedPageList = getPageList();
         for (BabyPage page : updatedPageList) {

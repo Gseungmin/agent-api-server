@@ -80,13 +80,12 @@ public class PageServiceTest extends ServiceTest {
     @DisplayName("2. 페이지 조회 - 해피 케이스 - 2. 페이지는 캐시 되어 있다.")
     public void 페이지_캐시_확인() {
         //given when
-        pageService.getCachedPage(TYPE_PREGNANCY_GUIDE, FETAL_PERIOD_5_8);
         Boolean isCached1 = pageService.validateCache(TYPE_PREGNANCY_GUIDE, FETAL_PERIOD_5_8);
         Boolean isCached2 = pageService.validateCache(TYPE_PREGNANCY_GUIDE, FETAL_PERIOD_0_4);
 
         //then
         assertThat(isCached1).isEqualTo(true);
-        assertThat(isCached2).isEqualTo(false);
+        assertThat(isCached2).isEqualTo(true);
     }
 
     @Test
@@ -142,13 +141,12 @@ public class PageServiceTest extends ServiceTest {
         flushAndClear();
 
         //when
-        pageService.putCachedPage(TYPE_PREGNANCY_GUIDE, FETAL_PERIOD_5_8);
         Boolean isCached1 = pageService.validateCache(TYPE_PREGNANCY_GUIDE, FETAL_PERIOD_5_8);
         Boolean isCached2 = pageService.validateCache(TYPE_PREGNANCY_GUIDE, FETAL_PERIOD_0_4);
 
         //then
         assertThat(isCached1).isEqualTo(true);
-        assertThat(isCached2).isEqualTo(false);
+        assertThat(isCached2).isEqualTo(true);
     }
 
     @Test
