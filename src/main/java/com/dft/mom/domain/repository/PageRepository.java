@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -13,4 +14,8 @@ public interface PageRepository extends JpaRepository<BabyPage, Long> {
     @Query("select bp from BabyPage bp " +
             "where bp.type = :type and bp.period = :period")
     Optional<BabyPage> findBabyByTypeAndPeriod(Integer type, Integer period);
+
+    @Query("select bp from BabyPage bp " +
+            "where bp.type = :type")
+    List<BabyPage> findPageListByType(Integer type);
 }

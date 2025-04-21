@@ -26,4 +26,8 @@ public class EntityConstants {
     public static final Integer MAX_NAME = 15;
     public static final Integer MAX_TIME = 1440;
     public static final Integer MIN_TIME = 0;
+
+    /*POST STATUS*/
+    public static final Integer MAX_TITLE = 70;
+    public static final Integer MAX_SUMMARY = 250;
 }

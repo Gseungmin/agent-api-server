@@ -17,7 +17,6 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(indexes = {
         @Index(name = "idx_baby_page_type_period", columnList = "type, period"),
-        @Index(name = "idx_baby_page_name", columnList = "excelName")
 })
 public class BabyPage extends BaseEntity {
 
