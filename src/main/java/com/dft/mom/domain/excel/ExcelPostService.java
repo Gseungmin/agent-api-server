@@ -41,7 +41,7 @@ public class ExcelPostService {
      * 2. PAGE에 POST가 없다면 새로운 연결 생성, 만약 이미 연결되어있던 POST가 EXCEL에 없다면 연관관계 해제
      * 쿼리 : 1(페이지 조회) + 시트당 { 1(포스트와 연관관계된 페이지 아이템 조회) + 1(포스트 조회) + @(삽입 쿼리) }
      * */
-    public void createPost(String excelFilePath) throws IOException {
+    public synchronized void createPost(String excelFilePath) throws IOException {
         Workbook workbook = loadWorkbook(excelFilePath);
         List<BabyPage> pageList = getPageList();
 
@@ -80,8 +80,9 @@ public class ExcelPostService {
             Row row = sheet.getRow(rowIndex);
             if (row == null) continue;
 
-            Cell idCell = row.getCell(0, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
-            if (idCell == null) {
+            Cell cell1 = row.getCell(0, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
+            Cell cell2 = row.getCell(1, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
+            if (cell1 == null && cell2 == null) {
                 break;
             }
 
@@ -122,12 +123,12 @@ public class ExcelPostService {
             Post post = existingMap.get(dto.getItemId());
 
             if (post != null) {
-                post.updatePost(dto.getTitle(), dto.getSummary(), dto.getType());
+                post.updatePost(dto);
                 postList.add(post);
                 continue;
             }
 
-            Post newPost = new Post(dto.getItemId(), dto.getTitle(), dto.getSummary(), dto.getType());
+            Post newPost = new Post(dto);
             postList.add(newPost);
         }
 

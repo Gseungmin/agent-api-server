@@ -1,5 +1,6 @@
 package com.dft.mom.domain.entity.post;
 
+import com.dft.mom.domain.dto.baby.post.PostRowDto;
 import com.dft.mom.domain.entity.base.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -35,6 +36,9 @@ public class Post extends BaseEntity {
     private String content;
 
     @Column(nullable = false)
+    private Integer category;
+
+    @Column(nullable = false)
     private Integer type = DEFAULT_POST;
 
     @Column(nullable = false)
@@ -48,16 +52,18 @@ public class Post extends BaseEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "post")
     private List<SubItem> subItemList = new ArrayList<>();
 
-    public Post(Long itemId, String title, String summary, Integer type) {
-        this.itemId = itemId;
-        this.title = title;
-        this.content = summary;
-        this.type = type;
+    public Post(PostRowDto data) {
+        this.itemId = data.getItemId();
+        this.title = data.getTitle();
+        this.content = data.getSummary();
+        this.type = data.getType();
+        this.category = data.getCategory();
     }
 
-    public void updatePost(String title, String summary, Integer type) {
-        this.title = title;
-        this.content = summary;
-        this.type = type;
+    public void updatePost(PostRowDto data) {
+        this.title = data.getTitle();
+        this.content = data.getSummary();
+        this.type = data.getType();
+        this.category = data.getCategory();
     }
 }
