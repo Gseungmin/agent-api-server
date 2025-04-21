@@ -34,6 +34,9 @@ public class Inspection extends BaseEntity {
     private String content;
 
     @Column(nullable = false)
+    private Integer category;
+
+    @Column(nullable = false)
     private Integer priority = DEFAULT_IMPORTANT;
 
     @JsonIgnore
@@ -44,13 +47,13 @@ public class Inspection extends BaseEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "inspection")
     private List<SubItem> subItemList = new ArrayList<>();
 
-    public Inspection(Long itemId, String title, String content) {
+    public Inspection(Long itemId, String title, String content, Integer category) {
         this.itemId = itemId;
         this.title = title;
         this.content = content;
     }
 
-    public void updateInspection(String title, String content) {
+    public void updateInspection(String title, String content, Integer category) {
         this.title = title;
         this.content = content;
     }

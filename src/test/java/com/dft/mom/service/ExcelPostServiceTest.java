@@ -2,8 +2,6 @@ package com.dft.mom.service;
 
 import com.dft.mom.ServiceTest;
 import com.dft.mom.domain.excel.ExcelPostService;
-import com.dft.mom.domain.repository.PostRepository;
-import com.dft.mom.domain.service.PageService;
 import com.dft.mom.web.exception.CommonException;
 import com.dft.mom.web.exception.post.PageException;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,7 +33,7 @@ public class ExcelPostServiceTest extends ServiceTest {
     @Test
     @DisplayName("0. POST 생성 - 해피 케이스 - 1. POST 저장된다.")
     public void POST_저장() throws IOException {
-        String route = "validate/post/post_valid.xlsx";
+        String route = "validate/post/success/post_valid.xlsx";
         excelPostService.createPost(route);
     }
 

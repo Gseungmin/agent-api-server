@@ -41,6 +41,11 @@ public enum ExceptionType {
     FAIL_CREATE_FAMILY_CODE( 20005, "가족 코드 생성에 실패하였습니다."),
 
     /**
+     * PAGE Exception
+     * */
+    PAGE_NOT_EXIST(30000, "페이지 정보가 존재하지 않습니다."),
+
+    /**
      * EXCEL Exception
      * */
     EXCEL_NOT_FOUND( 70000, "해당 엑셀파일이 존재하지 않습니다."),
