@@ -11,8 +11,6 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.dft.mom.domain.util.PostConstants.*;
-
 @Entity
 @Getter
 @Setter

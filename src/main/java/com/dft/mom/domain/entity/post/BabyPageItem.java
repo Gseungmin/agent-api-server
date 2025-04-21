@@ -19,9 +19,6 @@ public class BabyPageItem extends BaseEntity {
     @Column(name = "babyPageItemId")
     private Long id;
 
-    @Column(nullable = false)
-    private Integer category;
-
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "babyPageId")
@@ -37,16 +34,14 @@ public class BabyPageItem extends BaseEntity {
     @JoinColumn(name = "inspectionId")
     private Inspection inspection;
 
-    public BabyPageItem(BabyPage babyPage, Post post, Integer category) {
-        this.category = category;
+    public BabyPageItem(BabyPage babyPage, Post post) {
         this.babyPage = babyPage;
         this.post = post;
         post.getBabyPageItemList().add(this);
         babyPage.getBabyPageItemList().add(this);
     }
 
-    public BabyPageItem(BabyPage babyPage, Inspection inspection, Integer category) {
-        this.category = category;
+    public BabyPageItem(BabyPage babyPage, Inspection inspection) {
         this.babyPage = babyPage;
         this.inspection = inspection;
         inspection.getBabyPageItemList().add(this);

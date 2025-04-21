@@ -71,7 +71,7 @@ public class PostConstants {
     public static final int FIND_NEARBY_HOSPITALS = 3002;  // 근처 병원 찾기
 
     // PAGE STATUS
-    public static final int TOTAL_PAGE_SIZE = 30;
+    public static final int TOTAL_PAGE_SIZE = 22;
 
     // PAGE TYPE
     public static final int TYPE_PREGNANCY_GUIDE = 0;
@@ -80,6 +80,9 @@ public class PostConstants {
     public static final int TYPE_CHILDCARE_GUIDE = 3;
     public static final int TYPE_CHILDCARE_NUTRITION = 4;
     public static final int TYPE_CHILDCARE_EXAM = 5;
+
+    // PERIOD
+    public static final int PERIOD_TOTAL = 0;
 
     // FETAL PERIOD
     public static final int FETAL_PERIOD_TOTAL = 100;
@@ -108,12 +111,12 @@ public class PostConstants {
     public static final int BABY_PERIOD_19_24 = 210;
 
     public static final List<Integer> FETAL_PERIOD_LIST = List.of(
-            FETAL_PERIOD_TOTAL, FETAL_PERIOD_0_4, FETAL_PERIOD_5_8, FETAL_PERIOD_9_12, FETAL_PERIOD_13_16,
+            FETAL_PERIOD_0_4, FETAL_PERIOD_5_8, FETAL_PERIOD_9_12, FETAL_PERIOD_13_16,
             FETAL_PERIOD_17_20, FETAL_PERIOD_21_24, FETAL_PERIOD_25_28, FETAL_PERIOD_29_32, FETAL_PERIOD_33_36, FETAL_PERIOD_37_40
     );
 
     public static final List<Integer> BABY_PERIOD_LIST = List.of(
-            BABY_PERIOD_TOTAL, BABY_PERIOD_0_1, BABY_PERIOD_1_2, BABY_PERIOD_3_4, BABY_PERIOD_5_6,
+            BABY_PERIOD_0_1, BABY_PERIOD_1_2, BABY_PERIOD_3_4, BABY_PERIOD_5_6,
             BABY_PERIOD_7_8, BABY_PERIOD_9_10, BABY_PERIOD_11_12, BABY_PERIOD_13_15, BABY_PERIOD_16_18, BABY_PERIOD_19_24
     );
 }
