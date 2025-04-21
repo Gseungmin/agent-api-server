@@ -1,4 +1,4 @@
-package com.dft.mom.domain.dto.baby.post;
+package com.dft.mom.domain.dto.post;
 
 import lombok.*;
 

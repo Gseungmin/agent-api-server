@@ -31,6 +31,11 @@ public class BabyPageItem extends BaseEntity {
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "nutritionId")
+    private Nutrition nutrition;
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "inspectionId")
     private Inspection inspection;
 
@@ -38,6 +43,13 @@ public class BabyPageItem extends BaseEntity {
         this.babyPage = babyPage;
         this.post = post;
         post.getBabyPageItemList().add(this);
+        babyPage.getBabyPageItemList().add(this);
+    }
+
+    public BabyPageItem(BabyPage babyPage, Nutrition nutrition) {
+        this.babyPage = babyPage;
+        this.nutrition = nutrition;
+        nutrition.getBabyPageItemList().add(this);
         babyPage.getBabyPageItemList().add(this);
     }
 
@@ -52,5 +64,6 @@ public class BabyPageItem extends BaseEntity {
         this.babyPage = null;
         this.post = null;
         this.inspection = null;
+        this.nutrition = null;
     }
 }

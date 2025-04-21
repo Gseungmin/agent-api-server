@@ -4,8 +4,11 @@ import com.dft.mom.ServiceTest;
 import com.dft.mom.domain.dto.page.res.CategoryResponseDto;
 import com.dft.mom.domain.dto.page.res.PageResponseDto;
 import com.dft.mom.domain.entity.post.BabyPage;
+import com.dft.mom.domain.entity.post.BabyPageItem;
+import com.dft.mom.domain.excel.ExcelNutritionService;
 import com.dft.mom.domain.excel.ExcelPostService;
 import com.dft.mom.domain.repository.PageRepository;
+import com.dft.mom.domain.service.CacheUpdateService;
 import com.dft.mom.domain.service.PageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -36,12 +39,22 @@ public class PageServiceTest extends ServiceTest {
     private PageService pageService;
 
     @Autowired
+    private CacheUpdateService cacheUpdateService;
+
+    @Autowired
     private ExcelPostService excelPostService;
+
+    @Autowired
+    private ExcelNutritionService excelNutritionService;
 
     @BeforeEach
     public void setUp() throws IOException {
         String route = "validate/post/success/post_valid.xlsx";
         excelPostService.createPost(route);
+        flushAndClear();
+
+        String nutritionRoute = "validate/nutrition/success/nutrition_valid.xlsx";
+        excelNutritionService.createNutrition(nutritionRoute, TYPE_PREGNANCY_NUTRITION);
         flushAndClear();
     }
 
@@ -80,12 +93,13 @@ public class PageServiceTest extends ServiceTest {
     @DisplayName("2. 페이지 조회 - 해피 케이스 - 2. 페이지는 캐시 되어 있다.")
     public void 페이지_캐시_확인() {
         //given when
-        Boolean isCached1 = pageService.validateCache(TYPE_PREGNANCY_GUIDE, FETAL_PERIOD_5_8);
-        Boolean isCached2 = pageService.validateCache(TYPE_PREGNANCY_GUIDE, FETAL_PERIOD_0_4);
+        pageService.getCachedPage(TYPE_PREGNANCY_GUIDE, FETAL_PERIOD_5_8);
+        Boolean isCached1 = cacheUpdateService.validateCache(TYPE_PREGNANCY_GUIDE, FETAL_PERIOD_5_8);
+        Boolean isCached2 = cacheUpdateService.validateCache(TYPE_PREGNANCY_GUIDE, FETAL_PERIOD_0_4);
 
         //then
         assertThat(isCached1).isEqualTo(true);
-        assertThat(isCached2).isEqualTo(true);
+        assertThat(isCached2).isEqualTo(false);
     }
 
     @Test
@@ -93,11 +107,27 @@ public class PageServiceTest extends ServiceTest {
     public void 페이지_캐시_삭제() {
         //given when
         pageService.getCachedPage(TYPE_PREGNANCY_GUIDE, FETAL_PERIOD_5_8);
-        pageService.deleteCache(TYPE_PREGNANCY_GUIDE, FETAL_PERIOD_5_8);
-        Boolean isCached = pageService.validateCache(TYPE_PREGNANCY_GUIDE, FETAL_PERIOD_5_8);
+        cacheUpdateService.deleteCache(TYPE_PREGNANCY_GUIDE, FETAL_PERIOD_5_8);
+        Boolean isCached = cacheUpdateService.validateCache(TYPE_PREGNANCY_GUIDE, FETAL_PERIOD_5_8);
 
         //then
         assertThat(isCached).isEqualTo(false);
+    }
+
+    @Test
+    @DisplayName("2. 페이지 조회 - 해피 케이스 - 4. 영양 페이지를 조회할 수 있다.")
+    public void 영양_페이지_조회() {
+        //given when
+        PageResponseDto 페이지_조회 = pageService.getCachedPage(TYPE_PREGNANCY_NUTRITION, PERIOD_TOTAL);
+        List<CategoryResponseDto> 카테고리리스트 = 페이지_조회.getCategoryList();
+        CategoryResponseDto 카테고리2000 = 카테고리리스트.get(0);
+
+        //then
+        assertThat(페이지_조회.getPageType()).isEqualTo(TYPE_PREGNANCY_NUTRITION);
+        assertThat(페이지_조회.getPagePeriod()).isEqualTo(PERIOD_TOTAL);
+        assertThat(카테고리리스트.size()).isEqualTo(1);
+        assertThat(카테고리2000.getCategory()).isEqualTo(2000);
+        assertThat(카테고리2000.getNutritionList().size()).isEqualTo(8);
     }
 
     @Test
@@ -141,12 +171,12 @@ public class PageServiceTest extends ServiceTest {
         flushAndClear();
 
         //when
-        Boolean isCached1 = pageService.validateCache(TYPE_PREGNANCY_GUIDE, FETAL_PERIOD_5_8);
-        Boolean isCached2 = pageService.validateCache(TYPE_PREGNANCY_GUIDE, FETAL_PERIOD_0_4);
+        Boolean isCached1 = cacheUpdateService.validateCache(TYPE_PREGNANCY_GUIDE, FETAL_PERIOD_5_8);
+        Boolean isCached2 = cacheUpdateService.validateCache(TYPE_PREGNANCY_GUIDE, FETAL_PERIOD_0_4);
 
         //then
         assertThat(isCached1).isEqualTo(true);
-        assertThat(isCached2).isEqualTo(true);
+        assertThat(isCached2).isEqualTo(false);
     }
 
     @Test
@@ -162,11 +192,40 @@ public class PageServiceTest extends ServiceTest {
 
         //when
         pageService.putCachedPage(TYPE_PREGNANCY_GUIDE, FETAL_PERIOD_5_8);
-        pageService.deleteCache(TYPE_PREGNANCY_GUIDE, FETAL_PERIOD_5_8);
-        Boolean isCached = pageService.validateCache(TYPE_PREGNANCY_GUIDE, FETAL_PERIOD_5_8);
+        cacheUpdateService.deleteCache(TYPE_PREGNANCY_GUIDE, FETAL_PERIOD_5_8);
+        Boolean isCached = cacheUpdateService.validateCache(TYPE_PREGNANCY_GUIDE, FETAL_PERIOD_5_8);
 
         //then
         assertThat(isCached).isEqualTo(false);
+    }
+
+    @Test
+    @DisplayName("3. 페이지 캐시 업데이트 - 해피 케이스 - 4. 영양 페이지를 업데이트 할 수 있다.")
+    public void 영양_페이지_업데이트() throws IOException {
+        //given
+        pageService.getCachedPage(TYPE_PREGNANCY_NUTRITION, PERIOD_TOTAL);
+        flushAndClear();
+
+        String route = "validate/nutrition/success/nutrition_valid_add.xlsx";
+        excelNutritionService.createNutrition(route, TYPE_PREGNANCY_NUTRITION);
+        flushAndClear();
+
+        //when
+        PageResponseDto 페이지_조회 = pageService.putCachedPage(TYPE_PREGNANCY_NUTRITION, PERIOD_TOTAL);
+        List<CategoryResponseDto> 카테고리리스트 = 페이지_조회.getCategoryList();
+        CategoryResponseDto 카테고리2000 = 카테고리리스트.get(0);
+        CategoryResponseDto 카테고리2002 = 카테고리리스트.get(1);
+
+        //then
+        assertThat(페이지_조회.getPageType()).isEqualTo(TYPE_PREGNANCY_NUTRITION);
+        assertThat(페이지_조회.getPagePeriod()).isEqualTo(PERIOD_TOTAL);
+        assertThat(카테고리리스트.size()).isEqualTo(2);
+
+        assertThat(카테고리2000.getCategory()).isEqualTo(2000);
+        assertThat(카테고리2002.getCategory()).isEqualTo(2002);
+
+        assertThat(카테고리2000.getNutritionList().size()).isEqualTo(8);
+        assertThat(카테고리2002.getNutritionList().size()).isEqualTo(5);
     }
 
     @Test
@@ -174,7 +233,7 @@ public class PageServiceTest extends ServiceTest {
     public void 페이지_버전_체크() throws IOException {
         //given
         PageResponseDto 페이지V1 = pageService.getCachedPage(TYPE_PREGNANCY_GUIDE, FETAL_PERIOD_5_8);
-        assertThat(페이지V1.getVersion()).isEqualTo(1);
+        assertThat(페이지V1.getVersion()).isEqualTo(0);
         flushAndClear();
 
         //when
@@ -183,7 +242,10 @@ public class PageServiceTest extends ServiceTest {
         flushAndClear();
 
         //when
+        cacheUpdateService.updateCachedItem();
+        flushAndClear();
+
         PageResponseDto 페이지V2 = pageService.getCachedPage(TYPE_PREGNANCY_GUIDE, FETAL_PERIOD_5_8);
-        assertThat(페이지V2.getVersion()).isEqualTo(2);
+        assertThat(페이지V2.getVersion()).isEqualTo(1);
     }
 }

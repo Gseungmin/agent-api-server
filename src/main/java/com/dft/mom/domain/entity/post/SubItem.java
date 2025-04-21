@@ -44,6 +44,11 @@ public class SubItem extends BaseEntity {
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "nutritionId")
+    private Nutrition nutrition;
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "inspectionId")
     private Inspection inspection;
 

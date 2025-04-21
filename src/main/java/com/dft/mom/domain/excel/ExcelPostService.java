@@ -1,6 +1,6 @@
 package com.dft.mom.domain.excel;
 
-import com.dft.mom.domain.dto.baby.post.PostRowDto;
+import com.dft.mom.domain.dto.post.PostRowDto;
 import com.dft.mom.domain.entity.post.BabyPage;
 import com.dft.mom.domain.entity.post.BabyPageItem;
 import com.dft.mom.domain.entity.post.Post;
@@ -8,7 +8,7 @@ import com.dft.mom.domain.repository.PageItemRepository;
 import com.dft.mom.domain.repository.PageRepository;
 import com.dft.mom.domain.repository.PostRepository;
 import com.dft.mom.domain.service.PageService;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.dft.mom.web.exception.post.PageException;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
@@ -22,14 +22,13 @@ import java.util.stream.Collectors;
 
 import static com.dft.mom.domain.function.ExcelFunctionUtil.*;
 import static com.dft.mom.domain.validator.PostValidator.validateRows;
+import static com.dft.mom.web.exception.ExceptionType.PAGE_NOT_EXIST;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class ExcelPostService {
 
-    private final ObjectMapper objectMapper;
-    private final PageRepository pageRepository;
     private final PostRepository postRepository;
     private final PageItemRepository pageItemRepository;
     private final PageService pageService;
@@ -46,7 +45,11 @@ public class ExcelPostService {
      * */
     public synchronized void createPost(String excelFilePath) throws IOException {
         Workbook workbook = loadWorkbook(excelFilePath);
-        List<BabyPage> pageList = getPageList();
+        List<BabyPage> pageList = pageService.getPageList();
+
+        if (pageList.isEmpty()) {
+            throw new PageException(PAGE_NOT_EXIST.getCode(), PAGE_NOT_EXIST.getErrorMessage());
+        }
 
         for (Sheet sheet : workbook) {
             List<PostRowDto> rows = parseSheet(sheet);
@@ -54,24 +57,6 @@ public class ExcelPostService {
             List<Post> postList = updatePostList(rows);
             syncPageItems(postList, pageList, rows);
         }
-
-        updateCachedItem();
-    }
-
-    public void updateCachedItem() {
-        pageRepository.incrementAllVersions();
-        List<BabyPage> updatedPageList = getPageList();
-        for (BabyPage page : updatedPageList) {
-            pageService.putCachedPage(page.getType(), page.getPeriod());
-        }
-    }
-
-    /*
-     * PAGE 전체 조회
-     * */
-    @Transactional(readOnly = true)
-    public List<BabyPage> getPageList() {
-        return pageRepository.findAll();
     }
 
     /*
