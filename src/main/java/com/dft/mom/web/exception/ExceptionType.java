@@ -41,6 +41,11 @@ public enum ExceptionType {
     FAIL_CREATE_FAMILY_CODE( 20005, "가족 코드 생성에 실패하였습니다."),
 
     /**
+     * PAGE Exception
+     * */
+    PAGE_NOT_EXIST(30000, "페이지 정보가 존재하지 않습니다."),
+
+    /**
      * EXCEL Exception
      * */
     EXCEL_NOT_FOUND( 70000, "해당 엑셀파일이 존재하지 않습니다."),
@@ -73,7 +78,12 @@ public enum ExceptionType {
     BABY_UPDATE_BIRTH_INVALID(80000, "아이의 생년월일을 올바르게 입력해주세요."),
     BABY_UPDATE_BIRTH_TIME_INVALID(80000, "아이의 탄생시간을 올바르게 입력해주세요."),
     BABY_UPDATE_ALARM_LIST_INVALID(80000, "알림 설정을 확인해주세요."),
-    BABY_UPDATE_TYPE_INVALID(80000, "아이 타입 정보를 다시 수정해주세요.");
+    BABY_UPDATE_TYPE_INVALID(80000, "아이 타입 정보를 다시 수정해주세요."),
+
+    PAGE_TITLE_INVALID( 80000, "페이지 제목 정보를 다시 입력해주세요."),
+    PAGE_TYPE_INVALID( 80000, "페이지 타입 정보를 다시 입력해주세요."),
+    PAGE_PERIOD_INVALID( 80000, "페이지 기간 정보를 다시 입력해주세요."),
+    PAGE_SUMMARY_INVALID( 80000, "페이지 요약 정보를 다시 입력해주세요.");
 
     private final int code;
     private final String errorMessage;
