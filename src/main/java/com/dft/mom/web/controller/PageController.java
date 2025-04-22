@@ -20,11 +20,14 @@ public class PageController {
     private final PageService pageService;
 
     /*페이지 조회*/
-    @GetMapping()
-    public PageResponseDto getPage(Authentication authentication, HttpServletRequest request,
-                                   @RequestParam(name = "type") Integer type,
-                                   @RequestParam(name = "period") Integer period,
-                                   @RequestParam(name = "version", required = false) Integer version) {
+    @GetMapping
+    public PageResponseDto getPage(
+            Authentication authentication,
+            HttpServletRequest request,
+            @RequestParam(name = "type") Integer type,
+            @RequestParam(name = "period") Integer period,
+            @RequestParam(name = "version", required = false) Integer version
+    ) {
         validateAuthentication(authentication, request);
         validateTypeAndPeriod(type, period);
 

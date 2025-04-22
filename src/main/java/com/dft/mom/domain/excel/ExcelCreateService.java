@@ -26,7 +26,6 @@ import java.nio.file.StandardOpenOption;
 import java.util.List;
 
 import static com.dft.mom.web.exception.ExceptionType.*;
-
 @Service
 @RequiredArgsConstructor
 public class ExcelCreateService {
@@ -38,23 +37,27 @@ public class ExcelCreateService {
     };
 
     private static final String[] POST_HEADERS = {
-            "itemId", "title", "summary", "type", "start_period", "end_period", "category", "caution"
+            "itemId", "title", "summary", "type", "start_period",
+            "end_period", "category", "caution"
     };
 
     @PostConstruct
     public void init() throws IOException {
-//        exportJsonToExcel("research_post_2_3.json", "excel/createFetalPost.xlsx");
-//        exportNutritionJsonToExcel("research_nutrition.json", "excel/createNutrition.xlsx");
+        // exportJsonToExcel("research_post_2_3.json", "excel/createFetalPost.xlsx");
+        // exportNutritionJsonToExcel("research_nutrition.json", "excel/createNutrition.xlsx");
     }
 
     /*
      * JSON 데이터를 엑셀화 시켜주는 메서드
      * 1. JSON 데이터 읽어오기
-     * 2. 엑셀 존재하는지 확인 - 아직 엑셀파일이 없다면 예외
-     * 3. 시트 존재하는지 확인 - 이미 시트가 있다면 예외
+     * 2. 엑셀 존재하는지 확인 - 아직 파일 없으면 예외
+     * 3. 시트 존재하는지 확인 - 이미 있으면 예외
      * 4. 워크북 생성 후 저장
-     * */
-    public void exportJsonToExcel(String jsonFileName, String excelFilePath) throws IOException {
+     */
+    public void exportJsonToExcel(
+            String jsonFileName,
+            String excelFilePath
+    ) throws IOException {
         List<ExcelPostDto> dataList = readJsonFile(jsonFileName);
         Workbook workbook = loadWorkbook(excelFilePath);
 
@@ -69,7 +72,10 @@ public class ExcelCreateService {
         saveWorkbook(workbook, excelFilePath);
     }
 
-    public void exportNutritionJsonToExcel(String jsonFileName, String excelFilePath) throws IOException {
+    public void exportNutritionJsonToExcel(
+            String jsonFileName,
+            String excelFilePath
+    ) throws IOException {
         List<ExcelNutritionDto> dataList = readNutritionFile(jsonFileName);
         Workbook workbook = loadWorkbook(excelFilePath);
 
@@ -84,13 +90,14 @@ public class ExcelCreateService {
         saveWorkbook(workbook, excelFilePath);
     }
 
-    /*
-     * 기존 엑셀 파일 불러오는 메서드
-     * */
+    /* 기존 엑셀 파일 불러오는 메서드 */
     private Workbook loadWorkbook(String excelFilePath) throws IOException {
         Resource resource = new ClassPathResource(excelFilePath);
         if (!resource.exists()) {
-            throw new ExcelException(EXCEL_NOT_FOUND.getCode(), EXCEL_NOT_FOUND.getErrorMessage());
+            throw new ExcelException(
+                    EXCEL_NOT_FOUND.getCode(),
+                    EXCEL_NOT_FOUND.getErrorMessage()
+            );
         }
 
         try (InputStream is = resource.getInputStream()) {
@@ -98,15 +105,16 @@ public class ExcelCreateService {
         }
     }
 
-    /*
-     * JSON 파일 읽어오는 메서드
-     * */
+    /* JSON 파일 읽어오는 메서드 */
     private List<ExcelPostDto> readJsonFile(String jsonFileName) throws IOException {
         Resource resource = new ClassPathResource("json/" + jsonFileName);
         try (InputStream is = resource.getInputStream()) {
             return objectMapper.readValue(is, new TypeReference<>() {});
         } catch (FileNotFoundException e) {
-            throw new ExcelException(JSON_NOT_FOUND.getCode(), JSON_NOT_FOUND.getErrorMessage());
+            throw new ExcelException(
+                    JSON_NOT_FOUND.getCode(),
+                    JSON_NOT_FOUND.getErrorMessage()
+            );
         }
     }
 
@@ -115,26 +123,30 @@ public class ExcelCreateService {
         try (InputStream is = resource.getInputStream()) {
             return objectMapper.readValue(is, new TypeReference<>() {});
         } catch (FileNotFoundException e) {
-            throw new ExcelException(JSON_NOT_FOUND.getCode(), JSON_NOT_FOUND.getErrorMessage());
+            throw new ExcelException(
+                    JSON_NOT_FOUND.getCode(),
+                    JSON_NOT_FOUND.getErrorMessage()
+            );
         }
     }
 
-    /*
-     * 시트 헤더 생성
-     * */
+    /* 시트 헤더 생성 */
     private void createHeader(Sheet sheet, String sheetName) {
         Row header = sheet.createRow(0);
-        String[] headers = sheetName.equals("영양가이드") ? GUIDE_HEADERS : POST_HEADERS;
+        String[] headers = sheetName.equals("영양가이드")
+                ? GUIDE_HEADERS
+                : POST_HEADERS;
 
         for (int i = 0; i < headers.length; i++) {
             header.createCell(i).setCellValue(headers[i]);
         }
     }
 
-    /*
-     * 시트에 데이터 추가 (기존 데이터 뒤에 이어쓰기)
-     */
-    private void appendData(Sheet sheet, List<ExcelPostDto> dataList) {
+    /* 시트에 데이터 추가 (기존 데이터 뒤에 이어쓰기) */
+    private void appendData(
+            Sheet sheet,
+            List<ExcelPostDto> dataList
+    ) {
         int startRow = sheet.getLastRowNum() + 1;
         for (ExcelPostDto data : dataList) {
             Row row = sheet.createRow(startRow++);
@@ -149,7 +161,10 @@ public class ExcelCreateService {
         }
     }
 
-    private void appendNutritionData(Sheet sheet, List<ExcelNutritionDto> dataList) {
+    private void appendNutritionData(
+            Sheet sheet,
+            List<ExcelNutritionDto> dataList
+    ) {
         int startRow = sheet.getLastRowNum() + 1;
         for (ExcelNutritionDto data : dataList) {
             Row row = sheet.createRow(startRow++);
@@ -161,10 +176,11 @@ public class ExcelCreateService {
         }
     }
 
-    /*
-     * 워크북을 파일에 저장
-     */
-    private void saveWorkbook(Workbook workbook, String excelFilePath) throws IOException {
+    /* 워크북을 파일에 저장 */
+    private void saveWorkbook(
+            Workbook workbook,
+            String excelFilePath
+    ) throws IOException {
         Path path = Paths.get("src", "main", "resources", excelFilePath);
         try (OutputStream os = Files.newOutputStream(
                 path,
@@ -177,16 +193,16 @@ public class ExcelCreateService {
         }
     }
 
-    /*
-     * JSON 파일 읽어오는 메서드
-     * */
+    /* 시트 이름 생성 */
     private String createSheetName(String jsonFileName) {
         return switch (jsonFileName) {
             case "research_nutrition.json" -> "영양가이드";
             case "research_post_2_3.json" -> "임신가이드_2_3달";
             case "research_post_4_7.json" -> "임신가이드_4_7달";
             case "research_post_8_10.json" -> "임신가이드_8_10달";
-            case "research_caution_2_3.json", "research_caution_4_7.json", "research_caution_8_10.json" -> "임신가이드_주의";
+            case "research_caution_2_3.json",
+                 "research_caution_4_7.json",
+                 "research_caution_8_10.json" -> "임신가이드_주의";
             default -> jsonFileName;
         };
     }

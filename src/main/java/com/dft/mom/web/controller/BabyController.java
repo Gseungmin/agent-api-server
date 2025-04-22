@@ -30,21 +30,27 @@ public class BabyController {
     private final BabyService babyService;
 
     /*아이정보 추가*/
-    @PostMapping()
-    public List<BabyResponseDto> createBaby(Authentication authentication, HttpServletRequest request,
-                                            @RequestBody BabyCreateRequestDto dto) {
+    @PostMapping
+    public List<BabyResponseDto> createBaby(
+            Authentication authentication,
+            HttpServletRequest request,
+            @RequestBody BabyCreateRequestDto dto
+    ) {
         validateAuthentication(authentication, request);
         validatePregnancyAndParentingLists(dto.getPregnancyList(), dto.getParentingList());
 
-        Long memberId = parseLong(authentication.getName());
+        Long memberId = Long.parseLong(authentication.getName());
         Member member = memberService.getMember(memberId);
         return babyService.createBaby(member, dto);
     }
 
     /*아이정보 업데이트*/
-    @PatchMapping()
-    public BabyResponseDto updateBaby(Authentication authentication, HttpServletRequest request,
-                                      @RequestBody BabyUpdateRequestDto dto) {
+    @PatchMapping
+    public BabyResponseDto updateBaby(
+            Authentication authentication,
+            HttpServletRequest request,
+            @RequestBody BabyUpdateRequestDto dto
+    ) {
         validateAuthentication(authentication, request);
         validateUpdateBaby(dto);
 
@@ -54,8 +60,11 @@ public class BabyController {
 
     /*아이 타입 정보 업데이트 - 임신중에서 육아중으로 변경*/
     @PatchMapping("/type")
-    public BabyResponseDto updateBabyType(Authentication authentication, HttpServletRequest request,
-                                      @RequestBody BabyTypeUpdateRequestDto dto) {
+    public BabyResponseDto updateBabyType(
+            Authentication authentication,
+            HttpServletRequest request,
+            @RequestBody BabyTypeUpdateRequestDto dto
+    ) {
         validateAuthentication(authentication, request);
         validateUpdateBabyType(dto);
 
@@ -64,9 +73,12 @@ public class BabyController {
     }
 
     /*아이정보 삭제*/
-    @DeleteMapping()
-    public void deleteBaby(Authentication authentication, HttpServletRequest request,
-                                      @RequestBody BabyDeleteRequestDto dto) {
+    @DeleteMapping
+    public void deleteBaby(
+            Authentication authentication,
+            HttpServletRequest request,
+            @RequestBody BabyDeleteRequestDto dto
+    ) {
         validateAuthentication(authentication, request);
         validateId(dto.getId());
         validateId(dto.getFamilyId());

@@ -31,7 +31,10 @@ public class FunctionUtil {
         try {
             return Long.parseLong(id);
         } catch (NumberFormatException e) {
-            throw new MemberException(MEMBER_NOT_EXIST.getCode(), MEMBER_NOT_EXIST.getErrorMessage());
+            throw new MemberException(
+                    MEMBER_NOT_EXIST.getCode(),
+                    MEMBER_NOT_EXIST.getErrorMessage()
+            );
         }
     }
 }

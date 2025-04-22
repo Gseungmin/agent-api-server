@@ -22,11 +22,14 @@ public class FamilyController {
     private final FamilyService familyService;
 
     /*가족 재연결*/
-    @PostMapping()
-    public void connectFamily(Authentication authentication, HttpServletRequest request,
-                                          @RequestBody FamilyConnectRequestDto dto) {
+    @PostMapping
+    public void connectFamily(
+            Authentication authentication,
+            HttpServletRequest request,
+            @RequestBody FamilyConnectRequestDto dto
+    ) {
         validateAuthentication(authentication, request);
-        Long memberId = parseLong(authentication.getName());
+        Long memberId = Long.parseLong(authentication.getName());
 
         Member invitee = memberService.getMember(memberId);
         Family inviterFamily = familyService.getFamilyByCode(dto.getCode());
@@ -34,10 +37,14 @@ public class FamilyController {
     }
 
     /*가족 연결 해제*/
-    @DeleteMapping()
-    public Member disconnectFamily(Authentication authentication, HttpServletRequest request) {
+    @DeleteMapping
+    public Member disconnectFamily(
+            Authentication authentication,
+            HttpServletRequest request
+    ) {
         validateAuthentication(authentication, request);
-        Long memberId = parseLong(authentication.getName());
+        Long memberId = Long.parseLong(authentication.getName());
+
         Member member = memberService.getMember(memberId);
         return familyService.disConnectFamily(member);
     }

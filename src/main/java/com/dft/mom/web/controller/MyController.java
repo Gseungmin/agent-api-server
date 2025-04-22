@@ -23,13 +23,14 @@ public class MyController {
     private final MemberService memberService;
     private final RoleService roleService;
 
-    /*회원 조회*/
-    @GetMapping()
-    public MemberResponseDto getMember(Authentication authentication, HttpServletRequest request) {
+    /* 회원 조회 */
+    @GetMapping
+    public MemberResponseDto getMember(
+            Authentication authentication,
+            HttpServletRequest request
+    ) {
         validateAuthentication(authentication, request);
-
         String role = roleService.getMemberRole(authentication);
-        roleService.validateNon(role);
 
         Long memberId = parseLong(authentication.getName());
         MemberResponseDto response = memberService.getMemberResponse(memberId);
@@ -37,9 +38,13 @@ public class MyController {
         return response;
     }
 
-    /*프로필 업데이트*/
-    @PatchMapping()
-    public MemberUpdateResponseDto updateProfile(Authentication authentication, HttpServletRequest request, @RequestBody MemberUpdateRequestDto dto) {
+    /* 프로필 업데이트 */
+    @PatchMapping
+    public MemberUpdateResponseDto updateProfile(
+            Authentication authentication,
+            HttpServletRequest request,
+            @RequestBody MemberUpdateRequestDto dto
+    ) {
         validateAuthentication(authentication, request);
         validateUpdateMember(dto);
 
@@ -49,3 +54,4 @@ public class MyController {
         return new MemberUpdateResponseDto(savedMember);
     }
 }
+

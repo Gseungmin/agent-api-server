@@ -31,7 +31,10 @@ public class FamilyService {
         Optional<Family> optFamily = familyRepository.findFamilyByCode(code);
 
         if (optFamily.isEmpty()) {
-            throw new FamilyException(FAMILY_CODE_INVALID.getCode(), FAMILY_CODE_INVALID.getErrorMessage());
+            throw new FamilyException(
+                    FAMILY_CODE_INVALID.getCode(),
+                    FAMILY_CODE_INVALID.getErrorMessage()
+            );
         }
 
         return optFamily.get();
@@ -42,7 +45,10 @@ public class FamilyService {
         Long inviteeFamilyId = invitee.getFamily().getId();
 
         if (Objects.equals(inviteeFamilyId, inviterfamily.getId())) {
-            throw new FamilyException(ALREADY_CONNECTED_FAMILY.getCode(), ALREADY_CONNECTED_FAMILY.getErrorMessage());
+            throw new FamilyException(
+                    ALREADY_CONNECTED_FAMILY.getCode(),
+                    ALREADY_CONNECTED_FAMILY.getErrorMessage()
+            );
         }
 
         inviterfamily.addMember(invitee);

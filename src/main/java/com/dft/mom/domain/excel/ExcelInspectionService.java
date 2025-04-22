@@ -34,7 +34,6 @@ import static com.dft.mom.domain.util.PostConstants.TYPE_INSPECTION;
 import static com.dft.mom.domain.validator.PostValidator.validateInspectionRows;
 import static com.dft.mom.domain.validator.PostValidator.validateNutritionRows;
 import static com.dft.mom.web.exception.ExceptionType.PAGE_NOT_EXIST;
-
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -58,7 +57,10 @@ public class ExcelInspectionService {
                 .orElse(null);
 
         if (babyPage == null) {
-            throw new PageException(PAGE_NOT_EXIST.getCode(), PAGE_NOT_EXIST.getErrorMessage());
+            throw new PageException(
+                    PAGE_NOT_EXIST.getCode(),
+                    PAGE_NOT_EXIST.getErrorMessage()
+            );
         }
 
         for (Sheet sheet : workbook) {
@@ -80,16 +82,23 @@ public class ExcelInspectionService {
 
         for (int rowIndex = 1; rowIndex <= lastRowNum; rowIndex++) {
             Row row = sheet.getRow(rowIndex);
-            if (row == null) continue;
+            if (row == null) {
+                continue;
+            }
 
-            Cell cell1 = row.getCell(0, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
-            Cell cell2 = row.getCell(1, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
+            Cell cell1 = row.getCell(
+                    0,
+                    Row.MissingCellPolicy.RETURN_BLANK_AS_NULL
+            );
+            Cell cell2 = row.getCell(
+                    1,
+                    Row.MissingCellPolicy.RETURN_BLANK_AS_NULL
+            );
             if (cell1 == null && cell2 == null) {
                 break;
             }
 
             InspectionRowDto dto = new InspectionRowDto();
-
             dto.setItemId(getLongNumericValue(row.getCell(0)));
             dto.setTitle(getStringValue(row.getCell(1)));
             dto.setSummary(getStringValue(row.getCell(2)));
@@ -103,44 +112,50 @@ public class ExcelInspectionService {
     }
 
     private List<Inspection> updateInspectionList(List<InspectionRowDto> rows) {
-        List<Long> itemIds = rows.stream().map(InspectionRowDto::getItemId).distinct().toList();
+        List<Long> itemIds = rows.stream()
+                .map(InspectionRowDto::getItemId)
+                .distinct()
+                .toList();
 
         List<Inspection> existingItemList = inspectionRepository.findInspectionListByItemIdIn(itemIds);
-
         Map<Long, Inspection> existingMap = existingItemList.stream()
-                .collect(Collectors.toMap(Inspection::getItemId, Function.identity()));
+                .collect(Collectors.toMap(
+                        Inspection::getItemId,
+                        Function.identity()
+                ));
 
         List<Inspection> itemList = new ArrayList<>();
-
         for (InspectionRowDto dto : rows) {
             Inspection item = existingMap.get(dto.getItemId());
-
             if (item != null) {
                 item.updateInspection(dto);
                 itemList.add(item);
-                continue;
+            } else {
+                Inspection newItem = new Inspection(dto);
+                itemList.add(newItem);
             }
-
-            Inspection newItem = new Inspection(dto);
-            itemList.add(newItem);
         }
 
         return inspectionRepository.saveAll(itemList);
     }
 
-    private void syncPageItems(List<Inspection> itemList, BabyPage babyPage) {
-        List<Long> IdList = itemList.stream().map(Inspection::getId).toList();
-        List<BabyPageItem> existingItems = getPageItemList(IdList);
+    private void syncPageItems(
+            List<Inspection> itemList,
+            BabyPage babyPage
+    ) {
+        List<Long> idList = itemList.stream()
+                .map(Inspection::getId)
+                .toList();
+        List<BabyPageItem> existingItems = getPageItemList(idList);
 
         Set<Long> existingItemIds = existingItems.stream()
-                .map(babyPageItem -> babyPageItem.getInspection().getItemId())
+                .map(bpi -> bpi.getInspection().getItemId())
                 .collect(Collectors.toSet());
 
         List<BabyPageItem> addList = new ArrayList<>();
         for (Inspection inspection : itemList) {
             if (!existingItemIds.contains(inspection.getItemId())) {
-                BabyPageItem bpi = new BabyPageItem(babyPage, inspection);
-                addList.add(bpi);
+                addList.add(new BabyPageItem(babyPage, inspection));
             }
         }
 

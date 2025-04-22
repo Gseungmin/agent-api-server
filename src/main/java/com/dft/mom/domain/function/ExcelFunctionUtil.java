@@ -21,12 +21,12 @@ public class ExcelFunctionUtil {
 
     /* 숫자 셀 값 추출 */
     public static Long getLongNumericValue(Cell cell) {
-        if (cell == null) return null;
-
+        if (cell == null) {
+            return null;
+        }
         if (cell.getCellType() == CellType.NUMERIC) {
             return (long) cell.getNumericCellValue();
         }
-
         if (cell.getCellType() == CellType.STRING) {
             try {
                 return Long.parseLong(cell.getStringCellValue());
@@ -34,18 +34,17 @@ public class ExcelFunctionUtil {
                 return null;
             }
         }
-
         return null;
     }
 
     /* 숫자 셀 값 추출 */
     public static Integer getIntegerNumericValue(Cell cell) {
-        if (cell == null) return null;
-
+        if (cell == null) {
+            return null;
+        }
         if (cell.getCellType() == CellType.NUMERIC) {
             return (int) cell.getNumericCellValue();
         }
-
         if (cell.getCellType() == CellType.STRING) {
             try {
                 return Integer.parseInt(cell.getStringCellValue());
@@ -53,22 +52,20 @@ public class ExcelFunctionUtil {
                 return null;
             }
         }
-
         return null;
     }
 
     /* 문자열 셀 값 추출 */
     public static String getStringValue(Cell cell) {
-        if (cell == null) return null;
-
+        if (cell == null) {
+            return null;
+        }
         if (cell.getCellType() == CellType.STRING) {
             return cell.getStringCellValue();
         }
-
         if (cell.getCellType() == CellType.NUMERIC) {
             return String.valueOf(cell.getNumericCellValue());
         }
-
         return "";
     }
 }
