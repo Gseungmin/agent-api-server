@@ -3,6 +3,7 @@
 
 ## 딥다이브
 ### @Cacheable은 어떻게 동작할까?
+[링크](https://jseungmin.notion.site/AOP-1dde2fd91ae2803abad4cfbe1c81618d)
 1. 캐시를 통해 조회 개선
 2. TTL을 통해 캐시 메모리 관리
 3. CachePut을 통해 캐시 업데이트 - 관리자 영역으로 무분별한 업데이트 제어
