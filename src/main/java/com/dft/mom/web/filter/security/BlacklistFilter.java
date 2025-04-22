@@ -55,6 +55,7 @@ public class BlacklistFilter implements Filter {
                 || requestUri.startsWith("/my")
                 || requestUri.startsWith("/baby")
                 || requestUri.startsWith("/page")
+                || requestUri.startsWith("/oauth")
                 || requestUri.startsWith("/family")
                 || requestUri.startsWith("/error")) {
             return true;
