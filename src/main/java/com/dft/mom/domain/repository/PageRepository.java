@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -17,11 +16,7 @@ public interface PageRepository extends JpaRepository<BabyPage, Long> {
             "where bp.type = :type and bp.period = :period")
     Optional<BabyPage> findBabyByTypeAndPeriod(Integer type, Integer period);
 
-    @Query("select bp from BabyPage bp " +
-            "where bp.type = :type")
-    List<BabyPage> findPageListByType(Integer type);
-
-    @Modifying(clearAutomatically = true)
+    @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Transactional
     @Query("update BabyPage bp set bp.version = bp.version + 1")
     void incrementAllVersions();

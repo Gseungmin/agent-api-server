@@ -1,9 +1,6 @@
 package com.dft.mom.domain.service;
 
-import com.dft.mom.domain.dto.page.res.CategoryResponseDto;
-import com.dft.mom.domain.dto.page.res.InspectionResponseDto;
-import com.dft.mom.domain.dto.page.res.PageResponseDto;
-import com.dft.mom.domain.dto.page.res.PostResponseDto;
+import com.dft.mom.domain.dto.page.res.*;
 import com.dft.mom.domain.entity.post.BabyPage;
 import com.dft.mom.domain.entity.post.BabyPageItem;
 import com.dft.mom.domain.repository.PageItemRepository;
@@ -13,7 +10,6 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,7 +28,6 @@ public class PageService {
 
     private final PageRepository pageRepository;
     private final PageItemRepository pageItemRepository;
-    private final RedisTemplate<String, Object> redisTemplate;
 
     /*페이지 캐시를 통해 조회 성능 개선*/
     @Transactional(readOnly = true)
@@ -42,6 +37,11 @@ public class PageService {
 
         if (babyPage.getType() == TYPE_PREGNANCY_GUIDE || babyPage.getType() == TYPE_CHILDCARE_GUIDE) {
             List<CategoryResponseDto> categoryList = getPageItemWithPost(babyPage);
+            return new PageResponseDto(babyPage, categoryList);
+        }
+
+        if (babyPage.getType() == TYPE_CHILDCARE_NUTRITION || babyPage.getType() == TYPE_PREGNANCY_NUTRITION) {
+            List<CategoryResponseDto> categoryList = getPageItemWithNutrition(babyPage);
             return new PageResponseDto(babyPage, categoryList);
         }
 
@@ -56,12 +56,17 @@ public class PageService {
         BabyPage babyPage = getPage(type, period);
 
         if (babyPage.getType() == TYPE_PREGNANCY_GUIDE || babyPage.getType() == TYPE_CHILDCARE_GUIDE) {
-            List<CategoryResponseDto> cats = getPageItemWithPost(babyPage);
-            return new PageResponseDto(babyPage, cats);
-        } else {
-            List<CategoryResponseDto> cats = getPageItemWithInspection(babyPage);
-            return new PageResponseDto(babyPage, cats);
+            List<CategoryResponseDto> categoryList = getPageItemWithPost(babyPage);
+            return new PageResponseDto(babyPage, categoryList);
         }
+
+        if (babyPage.getType() == TYPE_CHILDCARE_NUTRITION || babyPage.getType() == TYPE_PREGNANCY_NUTRITION) {
+            List<CategoryResponseDto> categoryList = getPageItemWithNutrition(babyPage);
+            return new PageResponseDto(babyPage, categoryList);
+        }
+
+        List<CategoryResponseDto> categoryList = getPageItemWithInspection(babyPage);
+        return new PageResponseDto(babyPage, categoryList);
     }
 
     /*페이지 조회*/
@@ -92,7 +97,26 @@ public class PageService {
                 .collect(Collectors.groupingBy(PostResponseDto::getCategory));
 
         return groupedByCategory.entrySet().stream().map(entry ->
-                new CategoryResponseDto(entry.getKey(), entry.getValue(), null)).toList();
+                new CategoryResponseDto(entry.getKey(), entry.getValue(), null, null)).toList();
+    }
+
+    /*
+     * 페이지 응답 생성
+     * 페이지와 연관관계를 가지는 BabyPageItem을 리스트로 조회
+     * 페치 조인을 통해 관련 Nutrition 같이 조회
+     * */
+    @Transactional(readOnly = true)
+    public List<CategoryResponseDto> getPageItemWithNutrition(BabyPage babyPage) {
+        List<BabyPageItem> pageItemList = pageItemRepository.findBabyPageItemWithNutrition(babyPage);
+
+        List<NutritionResponseDto> itemList = pageItemList.stream()
+                .map(item -> new NutritionResponseDto(item.getNutrition())).toList();
+
+        Map<Integer, List<NutritionResponseDto>> groupedByCategory = itemList.stream()
+                .collect(Collectors.groupingBy(NutritionResponseDto::getCategory));
+
+        return groupedByCategory.entrySet().stream().map(entry ->
+                new CategoryResponseDto(entry.getKey(), null, entry.getValue(), null)).toList();
     }
 
     /*
@@ -111,20 +135,7 @@ public class PageService {
                 .collect(Collectors.groupingBy(InspectionResponseDto::getCategory));
 
         return groupedByCategory.entrySet().stream().map(entry ->
-                new CategoryResponseDto(entry.getKey(), null, entry.getValue())).toList();
-    }
-
-    /*캐시 체크*/
-    public Boolean validateCache(Integer type, Integer period) {
-        String key = "pageCache::cached-page-" + type + "-" + period;
-        Object cachedValue = redisTemplate.opsForValue().get(key);
-        return cachedValue != null;
-    }
-
-    /*캐시 무효화*/
-    public Boolean deleteCache(Integer type, Integer period) {
-        String key = "pageCache::cached-page-" + type + "-" + period;
-        return redisTemplate.delete(key);
+                new CategoryResponseDto(entry.getKey(), null, null, entry.getValue())).toList();
     }
 
     @Transactional(readOnly = true)
@@ -134,10 +145,11 @@ public class PageService {
 
     @PostConstruct
     public void init() {
-        initPages(TYPE_PREGNANCY_EXAM,   List.of(PERIOD_TOTAL));
-        initPages(TYPE_CHILDCARE_EXAM,   List.of(PERIOD_TOTAL));
+        initPages(TYPE_INSPECTION,   List.of(PERIOD_TOTAL));
         initPages(TYPE_PREGNANCY_GUIDE,  FETAL_PERIOD_LIST);
         initPages(TYPE_CHILDCARE_GUIDE,  BABY_PERIOD_LIST);
+        initPages(TYPE_PREGNANCY_NUTRITION,  List.of(PERIOD_TOTAL));
+        initPages(TYPE_CHILDCARE_NUTRITION,  List.of(PERIOD_TOTAL));
     }
 
     private void initPages(int type, List<Integer> periods) {

@@ -1,5 +1,6 @@
 package com.dft.mom.domain.excel;
 
+import com.dft.mom.domain.dto.excel.ExcelNutritionDto;
 import com.dft.mom.web.exception.excel.ExcelException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -32,9 +33,18 @@ public class ExcelCreateService {
 
     private final ObjectMapper objectMapper;
 
+    private static final String[] GUIDE_HEADERS = {
+            "itemId", "title", "summary", "tag", "category"
+    };
+
+    private static final String[] POST_HEADERS = {
+            "itemId", "title", "summary", "type", "start_period", "end_period", "category", "caution"
+    };
+
     @PostConstruct
     public void init() throws IOException {
 //        exportJsonToExcel("research_post_2_3.json", "excel/createFetalPost.xlsx");
+//        exportNutritionJsonToExcel("research_nutrition.json", "excel/createNutrition.xlsx");
     }
 
     /*
@@ -52,10 +62,25 @@ public class ExcelCreateService {
         Sheet sheet = workbook.getSheet(sheetName);
         if (sheet == null) {
             sheet = workbook.createSheet(sheetName);
-            createHeader(sheet);
+            createHeader(sheet, sheetName);
         }
 
         appendData(sheet, dataList);
+        saveWorkbook(workbook, excelFilePath);
+    }
+
+    public void exportNutritionJsonToExcel(String jsonFileName, String excelFilePath) throws IOException {
+        List<ExcelNutritionDto> dataList = readNutritionFile(jsonFileName);
+        Workbook workbook = loadWorkbook(excelFilePath);
+
+        String sheetName = createSheetName(jsonFileName);
+        Sheet sheet = workbook.getSheet(sheetName);
+        if (sheet == null) {
+            sheet = workbook.createSheet(sheetName);
+            createHeader(sheet, sheetName);
+        }
+
+        appendNutritionData(sheet, dataList);
         saveWorkbook(workbook, excelFilePath);
     }
 
@@ -85,12 +110,22 @@ public class ExcelCreateService {
         }
     }
 
+    private List<ExcelNutritionDto> readNutritionFile(String jsonFileName) throws IOException {
+        Resource resource = new ClassPathResource("json/" + jsonFileName);
+        try (InputStream is = resource.getInputStream()) {
+            return objectMapper.readValue(is, new TypeReference<>() {});
+        } catch (FileNotFoundException e) {
+            throw new ExcelException(JSON_NOT_FOUND.getCode(), JSON_NOT_FOUND.getErrorMessage());
+        }
+    }
+
     /*
      * 시트 헤더 생성
      * */
-    private void createHeader(Sheet sheet) {
+    private void createHeader(Sheet sheet, String sheetName) {
         Row header = sheet.createRow(0);
-        String[] headers = {"itemId", "title", "summary", "type", "start_period", "end_period", "category", "caution"};
+        String[] headers = sheetName.equals("영양가이드") ? GUIDE_HEADERS : POST_HEADERS;
+
         for (int i = 0; i < headers.length; i++) {
             header.createCell(i).setCellValue(headers[i]);
         }
@@ -111,6 +146,18 @@ public class ExcelCreateService {
             row.createCell(5).setCellValue(data.getEnd_period());
             row.createCell(6).setCellValue(data.getCategory());
             row.createCell(7).setCellValue(data.isCaution());
+        }
+    }
+
+    private void appendNutritionData(Sheet sheet, List<ExcelNutritionDto> dataList) {
+        int startRow = sheet.getLastRowNum() + 1;
+        for (ExcelNutritionDto data : dataList) {
+            Row row = sheet.createRow(startRow++);
+            row.createCell(0).setCellValue("");
+            row.createCell(1).setCellValue(data.getTitle());
+            row.createCell(2).setCellValue(data.getSummary());
+            row.createCell(3).setCellValue(data.getTag());
+            row.createCell(4).setCellValue(data.getCategory());
         }
     }
 
@@ -135,6 +182,7 @@ public class ExcelCreateService {
      * */
     private String createSheetName(String jsonFileName) {
         return switch (jsonFileName) {
+            case "research_nutrition.json" -> "영양가이드";
             case "research_post_2_3.json" -> "임신가이드_2_3달";
             case "research_post_4_7.json" -> "임신가이드_4_7달";
             case "research_post_8_10.json" -> "임신가이드_8_10달";

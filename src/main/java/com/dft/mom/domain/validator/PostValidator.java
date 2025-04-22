@@ -1,6 +1,8 @@
 package com.dft.mom.domain.validator;
 
-import com.dft.mom.domain.dto.baby.post.PostRowDto;
+import com.dft.mom.domain.dto.post.InspectionRowDto;
+import com.dft.mom.domain.dto.post.NutritionRowDto;
+import com.dft.mom.domain.dto.post.PostRowDto;
 import com.dft.mom.web.exception.post.PageException;
 
 import java.util.List;
@@ -16,7 +18,15 @@ public class PostValidator {
         rows.forEach(PostValidator::validate);
     }
 
-    public static void validate(PostRowDto dto) {
+    public static void validateNutritionRows(List<NutritionRowDto> rows) {
+        rows.forEach(PostValidator::validateNutrition);
+    }
+
+    public static void validateInspectionRows(List<InspectionRowDto> rows) {
+        rows.forEach(PostValidator::validateInspection);
+    }
+
+    private static void validate(PostRowDto dto) {
         Long id = dto.getItemId();
         validateId(id);
         validateTitle(dto.getTitle(), id);
@@ -26,6 +36,25 @@ public class PostValidator {
         if (dto.getCaution().equals(false)) {
             validateSummary(dto.getSummary(), id);
         }
+    }
+
+    private static void validateNutrition(NutritionRowDto dto) {
+        Long id = dto.getItemId();
+        validateId(id);
+        validateTitle(dto.getTitle(), id);
+        validateTag(dto.getTag(), id);
+        validateNutritionCategory(dto.getCategory(), id);
+
+        if (!dto.getCategory().equals(B_B_CAUTION)) {
+            validateSummary(dto.getSummary(), id);
+        }
+    }
+
+    private static void validateInspection(InspectionRowDto dto) {
+        Long id = dto.getItemId();
+        validateId(id);
+        validateTitle(dto.getTitle(), id);
+        validateInspectionStartEnd(dto.getStart(), dto.getEnd(), id);
     }
 
     public static void validateTitle(String title, Long id) {
@@ -47,7 +76,7 @@ public class PostValidator {
     }
 
     public static void validateType(Integer type, Long id) {
-        if (type == null || type < TYPE_PREGNANCY_GUIDE || type > TYPE_CHILDCARE_EXAM) {
+        if (type == null || type < TYPE_PREGNANCY_GUIDE || type > TYPE_CHILDCARE_NUTRITION) {
             throw new PageException(
                     PAGE_TYPE_INVALID.getCode(),
                     "ID:" + id + " " + PAGE_TYPE_INVALID.getErrorMessage()
@@ -57,7 +86,7 @@ public class PostValidator {
 
     public static void validatePeriod(Integer start, Integer end, Integer type, Long id) {
         switch (type) {
-            case TYPE_PREGNANCY_EXAM, TYPE_CHILDCARE_EXAM:
+            case TYPE_INSPECTION:
                 if (start != PERIOD_TOTAL || end != PERIOD_TOTAL) {
                     validatePeriod(id);
                 }
@@ -84,5 +113,32 @@ public class PostValidator {
                 PAGE_PERIOD_INVALID.getCode(),
                 "ID:" + id + " " + PAGE_PERIOD_INVALID.getErrorMessage()
         );
+    }
+
+    private static void validateTag(Integer tag, Long id) {
+        if (tag == null || !NUTRIENT_TAGS.contains(tag)) {
+            throw new PageException(
+                    PAGE_TAG_INVALID.getCode(),
+                    "ID:" + id + " " + PAGE_TAG_INVALID.getErrorMessage()
+            );
+        }
+    }
+
+    private static void validateNutritionCategory(Integer category, Long id) {
+        if (category == null || !BIRTH_CATEGORIES.contains(category)) {
+            throw new PageException(
+                    PAGE_CATEGORY_INVALID.getCode(),
+                    "ID:" + id + " " + PAGE_CATEGORY_INVALID.getErrorMessage()
+            );
+        }
+    }
+
+    private static void validateInspectionStartEnd(Integer start, Integer end, Long id) {
+        if (start == null || end == null || start > end || start < 10000 || end > 20024) {
+            throw new PageException(
+                    PAGE_TIME_INVALID.getCode(),
+                    "ID:" + id + " " + PAGE_TIME_INVALID.getErrorMessage()
+            );
+        }
     }
 }

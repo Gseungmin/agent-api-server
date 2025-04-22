@@ -16,5 +16,6 @@ public class CategoryResponseDto {
 
     private Integer category;
     private List<PostResponseDto> postList;
+    private List<NutritionResponseDto> nutritionList;
     private List<InspectionResponseDto> inspectionList;
 }

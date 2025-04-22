@@ -1,6 +1,6 @@
 package com.dft.mom.domain.entity.post;
 
-import com.dft.mom.domain.dto.baby.post.PostRowDto;
+import com.dft.mom.domain.dto.post.PostRowDto;
 import com.dft.mom.domain.entity.base.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;

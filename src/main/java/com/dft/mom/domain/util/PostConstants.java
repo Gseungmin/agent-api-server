@@ -1,6 +1,7 @@
 package com.dft.mom.domain.util;
 
 import java.util.List;
+import java.util.Set;
 
 public class PostConstants {
 
@@ -22,12 +23,12 @@ public class PostConstants {
     public static final int QNA = 1;
 
     // NUTRITION TAG
-    public static final int NUTRIENT_POST_TAG = 100;  // 영양 성분 페이지 기본 태그
+    public static final int NUTRIENT_POST_TAG = 0;  // 영양 성분 페이지 기본 태그
 
-    public static final int BONE_GROWTH = 1000;  // 골격 뼈 성장
-    public static final int BRAIN_DEVELOPMENT = 1001;  // 뇌 발당
-    public static final int FETAL_IMMUNITY = 1002;  // 아이 면역력
-    public static final int SKIN = 1003;  // 피부 조직
+    public static final int BRAIN_DEVELOPMENT = 1000;  // 태아의 뇌와 신경 발달
+    public static final int BLOOD = 1001;  // 혈액 및 빈혈 관리
+    public static final int BONE_GROWTH = 1002;  // 뼈 건강 및 치아 관리
+    public static final int FETAL_IMMUNITY = 1003;  // 아이 면역력
 
     public static final int CARBOHYDRATES = 1100;  // 탄수화물
     public static final int PROTEIN = 1101;  // 단백질
@@ -39,6 +40,14 @@ public class PostConstants {
     public static final int MILK_QUALITY = 1201;  // 모유 품질
     public static final int MOTHER_IMMUNITY = 1202;  // 면역력
     public static final int MENTAL_HEALTH = 1203;  // 정신 건강
+
+    // 영양 성분 태그 집합
+    public static final Set<Integer> NUTRIENT_TAGS = Set.of(
+            NUTRIENT_POST_TAG,
+            BRAIN_DEVELOPMENT, BLOOD, BONE_GROWTH, FETAL_IMMUNITY,
+            CARBOHYDRATES, PROTEIN, FAT, VITAMINS, FIBER,
+            MOTHER_RECOVERY, MILK_QUALITY, MOTHER_IMMUNITY, MENTAL_HEALTH
+    );
 
     // BABY POST
     public static final int FETAL_GROWTH = 1000;  // 태아 성장
@@ -65,21 +74,25 @@ public class PostConstants {
     public static final int A_B_CAUTION = 2102;  // 출산 후 산모 및 태아 영양 주의사항
     public static final int A_B_NUTRIENT_ITEM = 2103;  // 출산 후 영양지
 
+    // 출산 전/후 카테고리 집합
+    public static final Set<Integer> BIRTH_CATEGORIES = Set.of(
+            B_B_NUTRIENTS, B_B_FOOD, B_B_CAUTION, B_B_NUTRIENT_ITEM,
+            A_B_FOOD, A_B_NUTRIENT, A_B_CAUTION, A_B_NUTRIENT_ITEM
+    );
+
     // INSPECTION POST
     public static final int INSPECTION_AND_VACCINATIONS = 3000;  // 검사 및 접종
-    public static final int INSPECTION_TABLE = 3001;  // 시기별 검사표
-    public static final int FIND_NEARBY_HOSPITALS = 3002;  // 근처 병원 찾기
+    public static final int FIND_NEARBY_HOSPITALS = 3001;  // 근처 병원 찾기
 
     // PAGE STATUS
-    public static final int TOTAL_PAGE_SIZE = 22;
+    public static final int TOTAL_PAGE_SIZE = 23;
 
     // PAGE TYPE
     public static final int TYPE_PREGNANCY_GUIDE = 0;
     public static final int TYPE_PREGNANCY_NUTRITION = 1;
-    public static final int TYPE_PREGNANCY_EXAM = 2;
+    public static final int TYPE_INSPECTION = 2;
     public static final int TYPE_CHILDCARE_GUIDE = 3;
     public static final int TYPE_CHILDCARE_NUTRITION = 4;
-    public static final int TYPE_CHILDCARE_EXAM = 5;
 
     // PERIOD
     public static final int PERIOD_TOTAL = 0;

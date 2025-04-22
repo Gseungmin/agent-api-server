@@ -40,7 +40,7 @@ public class ExcelPostServiceTest extends ServiceTest {
     @Test
     @DisplayName("1. POST 생성 - 엣지 케이스 - 1. POST ID 없음")
     public void POST_ID_없음() {
-        String route = "validate/post/post_invalid_id_null.xlsx";
+        String route = "validate/post/invalid/post_invalid_id_null.xlsx";
 
         CommonException exception1 = assertThrows(CommonException.class, () -> {
             excelPostService.createPost(route);
@@ -52,7 +52,7 @@ public class ExcelPostServiceTest extends ServiceTest {
     @Test
     @DisplayName("1. POST 생성 - 엣지 케이스 - 2. POST TITLE 없음")
     public void POST_TITLE_없음() {
-        String route = "validate/post/post_invalid_title_null.xlsx";
+        String route = "validate/post/invalid/post_invalid_title_null.xlsx";
 
         PageException exception1 = assertThrows(PageException.class, () -> {
             excelPostService.createPost(route);
@@ -64,7 +64,7 @@ public class ExcelPostServiceTest extends ServiceTest {
     @Test
     @DisplayName("1. POST 생성 - 엣지 케이스 - 3. POST TITLE 초과")
     public void POST_TITLE_초과() {
-        String route = "validate/post/post_invalid_title_exceed.xlsx";
+        String route = "validate/post/invalid/post_invalid_title_exceed.xlsx";
 
         PageException exception1 = assertThrows(PageException.class, () -> {
             excelPostService.createPost(route);
@@ -76,7 +76,7 @@ public class ExcelPostServiceTest extends ServiceTest {
     @Test
     @DisplayName("1. POST 생성 - 엣지 케이스 - 4. POST TYPE 적음")
     public void POST_TYPE_적음() {
-        String route = "validate/post/post_invalid_type_low.xlsx";
+        String route = "validate/post/invalid/post_invalid_type_low.xlsx";
 
         PageException exception1 = assertThrows(PageException.class, () -> {
             excelPostService.createPost(route);
@@ -88,7 +88,7 @@ public class ExcelPostServiceTest extends ServiceTest {
     @Test
     @DisplayName("1. POST 생성 - 엣지 케이스 - 5. POST TYPE 초과")
     public void POST_TYPE_초과() {
-        String route = "validate/post/post_invalid_type_exceed.xlsx";
+        String route = "validate/post/invalid/post_invalid_type_exceed.xlsx";
 
         PageException exception1 = assertThrows(PageException.class, () -> {
             excelPostService.createPost(route);
@@ -100,7 +100,7 @@ public class ExcelPostServiceTest extends ServiceTest {
     @Test
     @DisplayName("1. POST 생성 - 엣지 케이스 - 6. POST PERIOD 0 적음")
     public void POST_PERIOD_임신중_적음() {
-        String route = "validate/post/post_invalid_period_0_low.xlsx";
+        String route = "validate/post/invalid/post_invalid_period_0_low.xlsx";
 
         PageException exception1 = assertThrows(PageException.class, () -> {
             excelPostService.createPost(route);
@@ -112,7 +112,7 @@ public class ExcelPostServiceTest extends ServiceTest {
     @Test
     @DisplayName("1. POST 생성 - 엣지 케이스 - 7. POST PERIOD 0 초과")
     public void POST_PERIOD_임신중_초과() {
-        String route = "validate/post/post_invalid_period_0_exceed.xlsx";
+        String route = "validate/post/invalid/post_invalid_period_0_exceed.xlsx";
 
         PageException exception1 = assertThrows(PageException.class, () -> {
             excelPostService.createPost(route);
@@ -124,7 +124,7 @@ public class ExcelPostServiceTest extends ServiceTest {
     @Test
     @DisplayName("1. POST 생성 - 엣지 케이스 - 8. POST PERIOD 3 적음")
     public void POST_PERIOD_육아중_적음() {
-        String route = "validate/post/post_invalid_period_3_low.xlsx";
+        String route = "validate/post/invalid/post_invalid_period_3_low.xlsx";
 
         PageException exception1 = assertThrows(PageException.class, () -> {
             excelPostService.createPost(route);
@@ -136,7 +136,7 @@ public class ExcelPostServiceTest extends ServiceTest {
     @Test
     @DisplayName("1. POST 생성 - 엣지 케이스 - 9. POST PERIOD 3 초과")
     public void POST_PERIOD_육아중_초과() {
-        String route = "validate/post/post_invalid_period_3_exceed.xlsx";
+        String route = "validate/post/invalid/post_invalid_period_3_exceed.xlsx";
 
         PageException exception1 = assertThrows(PageException.class, () -> {
             excelPostService.createPost(route);

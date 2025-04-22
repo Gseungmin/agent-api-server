@@ -83,7 +83,10 @@ public enum ExceptionType {
     PAGE_TITLE_INVALID( 80000, "페이지 제목 정보를 다시 입력해주세요."),
     PAGE_TYPE_INVALID( 80000, "페이지 타입 정보를 다시 입력해주세요."),
     PAGE_PERIOD_INVALID( 80000, "페이지 기간 정보를 다시 입력해주세요."),
-    PAGE_SUMMARY_INVALID( 80000, "페이지 요약 정보를 다시 입력해주세요.");
+    PAGE_SUMMARY_INVALID( 80000, "페이지 요약 정보를 다시 입력해주세요."),
+    PAGE_TAG_INVALID( 80000, "페이지 태그 정보를 다시 입력해주세요."),
+    PAGE_CATEGORY_INVALID( 80000, "페이지 카테고리 정보를 다시 입력해주세요."),
+    PAGE_TIME_INVALID( 80000, "페이지 시간 정보를 다시 입력해주세요.");
 
     private final int code;
     private final String errorMessage;

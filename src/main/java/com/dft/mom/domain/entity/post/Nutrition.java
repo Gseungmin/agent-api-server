@@ -1,6 +1,6 @@
 package com.dft.mom.domain.entity.post;
 
-import com.dft.mom.domain.dto.post.InspectionRowDto;
+import com.dft.mom.domain.dto.post.NutritionRowDto;
 import com.dft.mom.domain.entity.base.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -12,18 +12,17 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.dft.mom.domain.util.PostConstants.DEFAULT_IMPORTANT;
-import static com.dft.mom.domain.util.PostConstants.INSPECTION_AND_VACCINATIONS;
+import static com.dft.mom.domain.util.PostConstants.PRIORITY_MEDIUM;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Inspection extends BaseEntity {
+public class Nutrition extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "inspectionId")
+    @Column(name = "nutritionId")
     private Long id;
 
     @Column(name = "itemId", nullable = false, unique = true)
@@ -32,41 +31,38 @@ public class Inspection extends BaseEntity {
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 1000)
     private String content;
 
     @Column(nullable = false)
-    private Integer start;
+    private Integer tag;
 
     @Column(nullable = false)
-    private Integer end;
+    private Integer category;
 
     @Column(nullable = false)
-    private Integer category = INSPECTION_AND_VACCINATIONS;
-
-    @Column(nullable = false)
-    private Integer priority = DEFAULT_IMPORTANT;
+    private Integer priority = PRIORITY_MEDIUM;
 
     @JsonIgnore
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "inspection")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "nutrition")
     private List<BabyPageItem> babyPageItemList = new ArrayList<>();
 
     @JsonIgnore
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "inspection")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "nutrition")
     private List<SubItem> subItemList = new ArrayList<>();
 
-    public Inspection(InspectionRowDto data) {
+    public Nutrition(NutritionRowDto data) {
         this.itemId = data.getItemId();
+        this.tag = data.getTag();
         this.title = data.getTitle();
         this.content = data.getSummary();
-        this.start = data.getStart();
-        this.end = data.getEnd();
+        this.category = data.getCategory();
     }
 
-    public void updateInspection(InspectionRowDto data) {
+    public void updateNutrition(NutritionRowDto data) {
+        this.tag = data.getTag();
         this.title = data.getTitle();
         this.content = data.getSummary();
-        this.start = data.getStart();
-        this.end = data.getEnd();
+        this.category = data.getCategory();
     }
 }
