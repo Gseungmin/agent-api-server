@@ -29,6 +29,7 @@ public enum ExceptionType {
     MULTI_LOGIN(10003, "중복 로그인되었습니다."),
     SOCIAL_CONNECT_FAILED(10004, "소셜 로그인은 진행할 수 없어요!"),
     UN_AUTH_NON_MEMBER(10005, "로그인 먼저 해주세요"),
+    MORE_FOR_MEMBER(10006, "더 많은 사용을 위해 로그인해주세요!"),
 
     /**
      * FAMILY Exception

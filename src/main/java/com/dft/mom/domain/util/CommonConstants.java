@@ -17,6 +17,7 @@ public class CommonConstants {
     public static final Set<String> NON_MEMBER_ROUTE = Set.of(
             "/auth/validate",
             "/auth/reissue",
+            "/oauth",
             "/common/version-check"
     );
 
