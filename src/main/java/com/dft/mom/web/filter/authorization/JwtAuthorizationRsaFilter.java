@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 
 import static com.dft.mom.domain.function.FunctionUtil.getToken;
 import static com.dft.mom.domain.util.CommonConstants.*;
+import static com.dft.mom.domain.util.EntityConstants.ADMIN_STR;
 import static com.dft.mom.domain.util.EntityConstants.MEMBER_STR;
 import static com.dft.mom.web.exception.ExceptionType.*;
 
@@ -146,7 +147,7 @@ public class JwtAuthorizationRsaFilter extends OncePerRequestFilter {
             return;
         }
 
-        if (roles.contains(MEMBER_STR)) {
+        if (roles.contains(MEMBER_STR) || roles.contains(ADMIN_STR)) {
             return;
         }
 

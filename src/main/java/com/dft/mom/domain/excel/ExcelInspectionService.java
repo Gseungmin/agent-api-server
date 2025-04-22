@@ -14,14 +14,13 @@ import com.dft.mom.domain.service.PageService;
 import com.dft.mom.web.exception.post.PageException;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +33,7 @@ import static com.dft.mom.domain.util.PostConstants.TYPE_INSPECTION;
 import static com.dft.mom.domain.validator.PostValidator.validateInspectionRows;
 import static com.dft.mom.domain.validator.PostValidator.validateNutritionRows;
 import static com.dft.mom.web.exception.ExceptionType.PAGE_NOT_EXIST;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -43,25 +43,31 @@ public class ExcelInspectionService {
     private final PageItemRepository pageItemRepository;
     private final PageService pageService;
 
-    @PostConstruct
-    public void init() throws IOException {
+    /*컨트롤러에서 MultipartFile로 받은 엑셀을 처리하는 신규 메서드*/
+    public synchronized void createInspection(MultipartFile file) throws IOException {
+        try (InputStream is = file.getInputStream();
+             Workbook workbook = WorkbookFactory.create(is)) {
+            processWorkbook(workbook);
+        }
     }
 
+    /*파일 경로로 엑셀을 처리하는 기존 메서드*/
     public synchronized void createInspection(String excelFilePath) throws IOException {
-        Workbook workbook = loadWorkbook(excelFilePath);
-        List<BabyPage> pageList = pageService.getPageList();
+        try (Workbook workbook = loadWorkbook(excelFilePath)) {
+            processWorkbook(workbook);
+        }
+    }
 
+    /*워크북 공통 처리 로직*/
+    private void processWorkbook(Workbook workbook) {
+        List<BabyPage> pageList = pageService.getPageList();
         BabyPage babyPage = pageList.stream()
                 .filter(page -> page.getType().equals(TYPE_INSPECTION))
                 .findFirst()
-                .orElse(null);
-
-        if (babyPage == null) {
-            throw new PageException(
-                    PAGE_NOT_EXIST.getCode(),
-                    PAGE_NOT_EXIST.getErrorMessage()
-            );
-        }
+                .orElseThrow(() -> new PageException(
+                        PAGE_NOT_EXIST.getCode(),
+                        PAGE_NOT_EXIST.getErrorMessage()
+                ));
 
         for (Sheet sheet : workbook) {
             List<InspectionRowDto> rows = parseSheet(sheet);

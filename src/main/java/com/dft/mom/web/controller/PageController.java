@@ -1,14 +1,21 @@
 package com.dft.mom.web.controller;
 
 import com.dft.mom.domain.dto.page.res.PageResponseDto;
+import com.dft.mom.domain.excel.ExcelInspectionService;
+import com.dft.mom.domain.excel.ExcelNutritionService;
+import com.dft.mom.domain.excel.ExcelPostService;
 import com.dft.mom.domain.service.PageService;
+import com.dft.mom.domain.service.RoleService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Objects;
 
+import static com.dft.mom.domain.util.PostConstants.*;
 import static com.dft.mom.domain.validator.MemberValidator.validateAuthentication;
 import static com.dft.mom.domain.validator.PostValidator.validateTypeAndPeriod;
 
@@ -18,6 +25,10 @@ import static com.dft.mom.domain.validator.PostValidator.validateTypeAndPeriod;
 public class PageController {
 
     private final PageService pageService;
+    private final ExcelNutritionService nutritionService;
+    private final ExcelPostService postService;
+    private final ExcelInspectionService inspectionService;
+    private final RoleService roleService;
 
     /*페이지 조회*/
     @GetMapping
@@ -42,5 +53,30 @@ public class PageController {
         }
 
         return cachedPage;
+    }
+
+    /*페이지 생성*/
+    @PostMapping
+    public void createPage(
+            Authentication authentication,
+            HttpServletRequest request,
+            @RequestPart("file") MultipartFile file,
+            @RequestParam("type") Integer type
+    ) throws IOException {
+        validateAuthentication(authentication, request);
+        String role = roleService.getMemberRole(authentication);
+        roleService.validateAdmin(role);
+
+        if (type.equals(TYPE_INSPECTION)) {
+            inspectionService.createInspection(file);
+            return;
+        }
+
+        if (type.equals(TYPE_CHILDCARE_NUTRITION) || type.equals(TYPE_PREGNANCY_NUTRITION)) {
+            nutritionService.createNutrition(file, type);
+            return;
+        }
+
+        postService.createPost(file);
     }
 }
