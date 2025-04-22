@@ -27,9 +27,7 @@ public class MyController {
     @GetMapping()
     public MemberResponseDto getMember(Authentication authentication, HttpServletRequest request) {
         validateAuthentication(authentication, request);
-
         String role = roleService.getMemberRole(authentication);
-        roleService.validateNon(role);
 
         Long memberId = parseLong(authentication.getName());
         MemberResponseDto response = memberService.getMemberResponse(memberId);
