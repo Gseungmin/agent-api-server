@@ -48,8 +48,8 @@ public class JWTSigner {
     }
 
     /*비회원 토큰 발급*/
-    public String getJwtToken(String memberId, Long time) {
-        List<String> authority = List.of("ROLE_NON");
+    public String getJwtToken(String memberId, String role, Long time) {
+        List<String> authority = List.of(role);
 
         return Jwts.builder()
                 .setSubject(memberId)

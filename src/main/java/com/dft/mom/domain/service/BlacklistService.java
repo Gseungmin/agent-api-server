@@ -10,6 +10,7 @@ import static com.dft.mom.domain.util.TimeOutConstants.TIMEOUT_BLACKLIST;
 
 @Service
 public class BlacklistService {
+
     private final Map<String, Long> blacklist = new ConcurrentHashMap<>();
 
     public void addToBlacklist(String ip) {
@@ -18,11 +19,9 @@ public class BlacklistService {
 
     public boolean isBlacklisted(String ip) {
         Long expiryTime = blacklist.get(ip);
-
         if (expiryTime == null) {
             return false;
         }
-
         if (System.currentTimeMillis() > expiryTime) {
             blacklist.remove(ip);
             return false;
@@ -36,4 +35,3 @@ public class BlacklistService {
         blacklist.entrySet().removeIf(entry -> entry.getValue() < now);
     }
 }
-

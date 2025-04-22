@@ -48,20 +48,26 @@ public class LoginService {
 
     public void validateLogin(String token, String userId, String prefix) {
         if (token == null) {
-            throw new MemberException(TOKEN_INVALID.getCode(), TOKEN_INVALID.getErrorMessage());
+            throw new MemberException(
+                    TOKEN_INVALID.getCode(),
+                    TOKEN_INVALID.getErrorMessage()
+            );
         }
 
         String tokenByPid = loginRedisService.getTokenById(prefix, userId);
 
         if (!Objects.equals(tokenByPid, token)) {
-            throw new MemberException(MULTI_LOGIN.getCode(), MULTI_LOGIN.getErrorMessage());
+            throw new MemberException(
+                    MULTI_LOGIN.getCode(),
+                    MULTI_LOGIN.getErrorMessage()
+            );
         }
     }
 
     /*리프레시 토큰 발급*/
-    public TokenResponseDto createToken(String memberId) {
-        String accessToken = jwtSigner.getJwtToken(memberId, ACCESS_TOKEN_EXPIRED);
-        String refreshToken = jwtSigner.getJwtToken(memberId, REFRESH_TOKEN_EXPIRED);
+    public TokenResponseDto createToken(String memberId, String role) {
+        String accessToken = jwtSigner.getJwtToken(memberId, role, ACCESS_TOKEN_EXPIRED);
+        String refreshToken = jwtSigner.getJwtToken(memberId, role, REFRESH_TOKEN_EXPIRED);
         loginRedisService.saveToken(memberId, accessToken, refreshToken);
         return new TokenResponseDto(accessToken, refreshToken);
     }
@@ -98,19 +104,32 @@ public class LoginService {
             headers.set("Authorization", "Bearer " + accessToken);
             HttpEntity<String> entity = new HttpEntity<>(headers);
 
-            ResponseEntity<String> response = restTemplate.exchange(KAKAO_API, HttpMethod.POST, entity, String.class);
+            ResponseEntity<String> response = restTemplate.exchange(
+                    KAKAO_API,
+                    HttpMethod.POST,
+                    entity,
+                    String.class
+            );
 
-            JsonElement element = JsonParser.parseString(Objects.requireNonNull(response.getBody()));
+            JsonElement element = JsonParser.parseString(
+                    Objects.requireNonNull(response.getBody())
+            );
             return element.getAsJsonObject().get("id").toString();
         } catch (RestClientException e) {
-            throw new MemberException(SOCIAL_CONNECT_FAILED.getCode(), SOCIAL_CONNECT_FAILED.getErrorMessage());
+            throw new MemberException(
+                    SOCIAL_CONNECT_FAILED.getCode(),
+                    SOCIAL_CONNECT_FAILED.getErrorMessage()
+            );
         }
     }
 
     public void accessToApple(String idToken, String User) {
         try {
             Map<String, String> tokenHeaders = parseHeaders(idToken);
-            ApplePublicKeyResponse appleKeys = restTemplate.getForObject(APPLE_API, ApplePublicKeyResponse.class);
+            ApplePublicKeyResponse appleKeys = restTemplate.getForObject(
+                    APPLE_API,
+                    ApplePublicKeyResponse.class
+            );
 
             PublicKey publicKey = applePublicKeyGenerator.generatePublicKey(tokenHeaders, appleKeys);
             Claims claims = getTokenClaims(idToken, publicKey);
@@ -119,17 +138,25 @@ public class LoginService {
                 return;
             }
 
-            throw new MemberException(SOCIAL_CONNECT_FAILED.getCode(), SOCIAL_CONNECT_FAILED.getErrorMessage());
+            throw new MemberException(
+                    SOCIAL_CONNECT_FAILED.getCode(),
+                    SOCIAL_CONNECT_FAILED.getErrorMessage()
+            );
         } catch (Exception e) {
-            throw new MemberException(SOCIAL_CONNECT_FAILED.getCode(), SOCIAL_CONNECT_FAILED.getErrorMessage());
+            throw new MemberException(
+                    SOCIAL_CONNECT_FAILED.getCode(),
+                    SOCIAL_CONNECT_FAILED.getErrorMessage()
+            );
         }
     }
 
     public Map<String, String> parseHeaders(String token) throws JsonProcessingException {
         String header = token.split("\\.")[0];
-        return new ObjectMapper().readValue(decodeHeader(header), Map.class);
+        return new ObjectMapper().readValue(
+                decodeHeader(header),
+                Map.class
+        );
     }
-
 
     public Claims getTokenClaims(String token, PublicKey publicKey) {
         return Jwts.parserBuilder()
@@ -140,6 +167,9 @@ public class LoginService {
     }
 
     public String decodeHeader(String token) {
-        return new String(Base64.getDecoder().decode(token), StandardCharsets.UTF_8);
+        return new String(
+                Base64.getDecoder().decode(token),
+                StandardCharsets.UTF_8
+        );
     }
 }

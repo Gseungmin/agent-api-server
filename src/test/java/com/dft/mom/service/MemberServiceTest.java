@@ -63,7 +63,7 @@ public class MemberServiceTest extends ServiceTest {
 
         int count = 10;
         for (int i = 0; i < count; i++) {
-            TokenResponseDto response = loginService.createToken(UUID.randomUUID().toString());
+            TokenResponseDto response = loginService.createToken(UUID.randomUUID().toString(), NON_MEMBER_STR);
             tokenList.add(response.getAccessToken());
             tokenList.add(response.getRefreshToken());
         }
@@ -76,7 +76,7 @@ public class MemberServiceTest extends ServiceTest {
     @DisplayName("1. 비회원 엑세스 토큰 발급 - 해피 케이스 - 2. 비회원의 토큰은 NON 권한을 가진다.")
     public void 비회원_엑세스_토큰_권한_체크() {
         //given
-        TokenResponseDto response = loginService.createToken(UUID.randomUUID().toString());
+        TokenResponseDto response = loginService.createToken(UUID.randomUUID().toString(), NON_MEMBER_STR);
 
         //when
         Claims accessTokenClaim = loginService.validateToken(key, response.getAccessToken());

@@ -32,37 +32,49 @@ public class SpringSecurityConfig {
     private final JwtAuthorizationRsaFilter jwtAuthorizationRsaFilter;
 
     private String[] permitAllUrlPatterns() {
-        return new String[] { "/", "/auth/kakao", "/auth/login/non", "/auth/apple", "/common/version-check" };
+        return new String[] {
+                "/",
+                "/auth/kakao",
+                "/auth/login/non",
+                "/auth/apple",
+                "/common/version-check"
+        };
     }
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests((requests) ->
-                        requests.requestMatchers(permitAllUrlPatterns()).permitAll().anyRequest().authenticated())
-                .exceptionHandling(handler -> handler.authenticationEntryPoint(authenticationEntryPoint));
-
-        http.csrf(AbstractHttpConfigurer::disable);
-        http.sessionManagement(sessionManagement ->
-                sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-        );
+        http
+                .authorizeHttpRequests(requests ->
+                        requests
+                                .requestMatchers(permitAllUrlPatterns()).permitAll()
+                                .anyRequest().authenticated()
+                )
+                .exceptionHandling(handler ->
+                        handler.authenticationEntryPoint(authenticationEntryPoint)
+                )
+                .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                );
 
         http.userDetailsService(userDetailsService);
 
-        JwtKakaoAuthenticationFilter jwtKakaoAuthenticationFilter = new JwtKakaoAuthenticationFilter(http, loginService);
+        JwtKakaoAuthenticationFilter jwtKakaoAuthenticationFilter =
+                new JwtKakaoAuthenticationFilter(http, loginService);
         jwtKakaoAuthenticationFilter.setAuthenticationFailureHandler(authFailureHandler);
         jwtKakaoAuthenticationFilter.setFilterProcessesUrl("/auth/login/kakao");
 
-        JwtAppleAuthenticationFilter jwtAppleAuthenticationFilter = new JwtAppleAuthenticationFilter(http, loginService);
+        JwtAppleAuthenticationFilter jwtAppleAuthenticationFilter =
+                new JwtAppleAuthenticationFilter(http, loginService);
         jwtAppleAuthenticationFilter.setAuthenticationFailureHandler(authFailureHandler);
         jwtAppleAuthenticationFilter.setFilterProcessesUrl("/auth/login/apple");
 
-        http.addFilter(jwtKakaoAuthenticationFilter)
-                .addFilterBefore(jwtAuthorizationRsaFilter, UsernamePasswordAuthenticationFilter.class);
+        http
+                .addFilter(jwtKakaoAuthenticationFilter)
+                .addFilter(jwtAppleAuthenticationFilter)
+                .addFilterBefore(jwtAuthorizationRsaFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(blacklistFilter, CorsFilter.class);
 
-        http.addFilter(jwtAppleAuthenticationFilter)
-                .addFilterBefore(jwtAuthorizationRsaFilter, UsernamePasswordAuthenticationFilter.class);
-
-        http.addFilterBefore(blacklistFilter, CorsFilter.class);
         return http.build();
     }
 }

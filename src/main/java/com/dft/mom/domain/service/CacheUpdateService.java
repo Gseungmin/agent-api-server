@@ -26,14 +26,14 @@ public class CacheUpdateService {
         }
     }
 
-    /*캐시 체크*/
+    /* 캐시 체크 */
     public Boolean validateCache(Integer type, Integer period) {
         String key = "pageCache::cached-page-" + type + "-" + period;
         Object cachedValue = redisTemplate.opsForValue().get(key);
         return cachedValue != null;
     }
 
-    /*캐시 무효화*/
+    /* 캐시 무효화 */
     public Boolean deleteCache(Integer type, Integer period) {
         String key = "pageCache::cached-page-" + type + "-" + period;
         return redisTemplate.delete(key);

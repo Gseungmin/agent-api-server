@@ -19,13 +19,19 @@ public class RoleService {
 
     public void validateAdmin(String role) {
         if (!Objects.equals(role, ADMIN_STR)) {
-            throw new MemberException(ADMIN_ONLY.getCode(), ADMIN_ONLY.getErrorMessage());
+            throw new MemberException(
+                    ADMIN_ONLY.getCode(),
+                    ADMIN_ONLY.getErrorMessage()
+            );
         }
     }
 
     public void validateNon(String role) {
         if (Objects.equals(role, NON_MEMBER_STR)) {
-            throw new MemberException(UN_AUTH_NON_MEMBER.getCode(), UN_AUTH_NON_MEMBER.getErrorMessage());
+            throw new MemberException(
+                    UN_AUTH_NON_MEMBER.getCode(),
+                    UN_AUTH_NON_MEMBER.getErrorMessage()
+            );
         }
     }
 
@@ -34,6 +40,9 @@ public class RoleService {
         return authorities.stream()
                 .findFirst()
                 .map(GrantedAuthority::getAuthority)
-                .orElseThrow(() -> new MemberException(MEMBER_NOT_EXIST.getCode(), MEMBER_NOT_EXIST.getErrorMessage()));
+                .orElseThrow(() -> new MemberException(
+                        MEMBER_NOT_EXIST.getCode(),
+                        MEMBER_NOT_EXIST.getErrorMessage()
+                ));
     }
 }

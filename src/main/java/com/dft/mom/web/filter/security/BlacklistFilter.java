@@ -54,6 +54,7 @@ public class BlacklistFilter implements Filter {
         if (requestUri.startsWith("/auth")
                 || requestUri.startsWith("/my")
                 || requestUri.startsWith("/baby")
+                || requestUri.startsWith("/page")
                 || requestUri.startsWith("/family")
                 || requestUri.startsWith("/error")) {
             return true;

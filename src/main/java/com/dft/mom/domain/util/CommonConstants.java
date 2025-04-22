@@ -14,6 +14,11 @@ public class CommonConstants {
 
     //ROUTE FOR NO AUTH
     public static final Set<String> POSSIBLE_GET_ROUTE = Set.of();
+    public static final Set<String> NON_MEMBER_ROUTE = Set.of(
+            "/auth/validate",
+            "/auth/reissue",
+            "/common/version-check"
+    );
 
     //EPOCH
     public static final long EPOCH = 1740787200000L;

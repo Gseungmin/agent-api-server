@@ -31,11 +31,12 @@ public class BabyService {
     @Transactional(readOnly = true)
     public Baby getBaby(Long babyId) {
         Optional<Baby> optBaby = babyRepository.findBabyById(babyId);
-
         if (optBaby.isEmpty()) {
-            throw new FamilyException(BABY_NOT_EXIST.getCode(), BABY_NOT_EXIST.getErrorMessage());
+            throw new FamilyException(
+                    BABY_NOT_EXIST.getCode(),
+                    BABY_NOT_EXIST.getErrorMessage()
+            );
         }
-
         return optBaby.get();
     }
 
@@ -43,7 +44,9 @@ public class BabyService {
     @Transactional(readOnly = true)
     public List<BabyResponseDto> getBabyList(Long familyId) {
         List<Baby> babyList = babyRepository.findBabyListByFamilyId(familyId);
-        return babyList.stream().map(BabyResponseDto::new).toList();
+        return babyList.stream()
+                .map(BabyResponseDto::new)
+                .toList();
     }
 
     /* 아이저장 */
@@ -54,17 +57,21 @@ public class BabyService {
         List<Baby> parentingList = createParentingList(dto.getParentingList(), family);
 
         pregnancyList.addAll(parentingList);
-        return pregnancyList.stream().map(BabyResponseDto::new).toList();
+        return pregnancyList.stream()
+                .map(BabyResponseDto::new)
+                .toList();
     }
 
     /* 아이저장 */
-    public List<Baby> createParentingList(List<ParentingCreateRequestDto> list, Family family) {
+    public List<Baby> createParentingList(
+            List<ParentingCreateRequestDto> list,
+            Family family
+    ) {
         if (list == null) {
             return new ArrayList<>();
         }
 
         List<Baby> babyList = new ArrayList<>();
-
         for (ParentingCreateRequestDto dto : list) {
             Baby baby = new Baby(dto);
             baby.addFamily(family);
@@ -75,13 +82,15 @@ public class BabyService {
     }
 
     /* 태아저장 */
-    public List<Baby> createPregnancyList(List<PregnancyCreateRequestDto> list, Family family) {
+    public List<Baby> createPregnancyList(
+            List<PregnancyCreateRequestDto> list,
+            Family family
+    ) {
         if (list == null) {
             return new ArrayList<>();
         }
 
         List<Baby> babyList = new ArrayList<>();
-
         for (PregnancyCreateRequestDto dto : list) {
             Baby baby = new Baby(dto);
             baby.addFamily(family);
@@ -92,31 +101,33 @@ public class BabyService {
     }
 
     /* 아이수정 */
-    public BabyResponseDto updateBaby(Baby baby, BabyUpdateRequestDto dto) {
+    public BabyResponseDto updateBaby(
+            Baby baby,
+            BabyUpdateRequestDto dto
+    ) {
         if (!Objects.equals(dto.getFamilyId(), baby.getFamily().getId())) {
-            throw new FamilyException(UN_AUTH_BABY.getCode(), UN_AUTH_BABY.getErrorMessage());
+            throw new FamilyException(
+                    UN_AUTH_BABY.getCode(),
+                    UN_AUTH_BABY.getErrorMessage()
+            );
         }
 
         if (dto.getName() != null) {
             baby.setName(dto.getName());
         }
-
         if (dto.getBirth() != null) {
             baby.setBirth(dto.getBirth());
         }
-
         if (dto.getBirthTime() != null) {
             baby.setBirthTime(dto.getBirthTime());
         }
-
-        if (dto.getType() != null && !dto.getType().equals(baby.getType())) {
+        if (dto.getType() != null
+                && !dto.getType().equals(baby.getType())) {
             baby.setType(dto.getType());
         }
-
         if (dto.getGender() != null) {
             baby.setGender(dto.getGender());
         }
-
         if (dto.getLastMenstrual() != null) {
             baby.setLastMoonDate(dto.getLastMenstrual());
         }
@@ -125,12 +136,19 @@ public class BabyService {
     }
 
     /* 아이수정 - 태아에서 아이로 변경 */
-    public BabyResponseDto updateBabyType(Baby baby, BabyTypeUpdateRequestDto dto, LocalDate today) {
+    public BabyResponseDto updateBabyType(
+            Baby baby,
+            BabyTypeUpdateRequestDto dto,
+            LocalDate today
+    ) {
         if (!Objects.equals(dto.getFamilyId(), baby.getFamily().getId())) {
-            throw new FamilyException(UN_AUTH_BABY.getCode(), UN_AUTH_BABY.getErrorMessage());
+            throw new FamilyException(
+                    UN_AUTH_BABY.getCode(),
+                    UN_AUTH_BABY.getErrorMessage()
+            );
         }
-
-        if (dto.getType() != null && !dto.getType().equals(baby.getType())) {
+        if (dto.getType() != null
+                && !dto.getType().equals(baby.getType())) {
             baby.setType(dto.getType());
             baby.setBirth(today);
         }
@@ -143,7 +161,6 @@ public class BabyService {
         if (baby.getFamily() == null) {
             return;
         }
-
         if (!Objects.equals(baby.getFamily().getId(), familyId)) {
             throw new FamilyException(UN_AUTH_BABY.getCode(), UN_AUTH_BABY.getErrorMessage());
         }
