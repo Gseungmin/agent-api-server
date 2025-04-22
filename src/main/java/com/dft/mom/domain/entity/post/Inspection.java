@@ -1,5 +1,6 @@
 package com.dft.mom.domain.entity.post;
 
+import com.dft.mom.domain.dto.post.InspectionRowDto;
 import com.dft.mom.domain.entity.base.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.dft.mom.domain.util.PostConstants.DEFAULT_IMPORTANT;
+import static com.dft.mom.domain.util.PostConstants.INSPECTION_AND_VACCINATIONS;
 
 @Entity
 @Getter
@@ -34,7 +36,13 @@ public class Inspection extends BaseEntity {
     private String content;
 
     @Column(nullable = false)
-    private Integer category;
+    private Integer start;
+
+    @Column(nullable = false)
+    private Integer end;
+
+    @Column(nullable = false)
+    private Integer category = INSPECTION_AND_VACCINATIONS;
 
     @Column(nullable = false)
     private Integer priority = DEFAULT_IMPORTANT;
@@ -47,14 +55,18 @@ public class Inspection extends BaseEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "inspection")
     private List<SubItem> subItemList = new ArrayList<>();
 
-    public Inspection(Long itemId, String title, String content, Integer category) {
-        this.itemId = itemId;
-        this.title = title;
-        this.content = content;
+    public Inspection(InspectionRowDto data) {
+        this.itemId = data.getItemId();
+        this.title = data.getTitle();
+        this.content = data.getSummary();
+        this.start = data.getStart();
+        this.end = data.getEnd();
     }
 
-    public void updateInspection(String title, String content, Integer category) {
-        this.title = title;
-        this.content = content;
+    public void updateInspection(InspectionRowDto data) {
+        this.title = data.getTitle();
+        this.content = data.getSummary();
+        this.start = data.getStart();
+        this.end = data.getEnd();
     }
 }

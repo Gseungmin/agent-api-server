@@ -1,5 +1,6 @@
 package com.dft.mom.domain.validator;
 
+import com.dft.mom.domain.dto.post.InspectionRowDto;
 import com.dft.mom.domain.dto.post.NutritionRowDto;
 import com.dft.mom.domain.dto.post.PostRowDto;
 import com.dft.mom.web.exception.post.PageException;
@@ -19,6 +20,10 @@ public class PostValidator {
 
     public static void validateNutritionRows(List<NutritionRowDto> rows) {
         rows.forEach(PostValidator::validateNutrition);
+    }
+
+    public static void validateInspectionRows(List<InspectionRowDto> rows) {
+        rows.forEach(PostValidator::validateInspection);
     }
 
     private static void validate(PostRowDto dto) {
@@ -45,6 +50,13 @@ public class PostValidator {
         }
     }
 
+    private static void validateInspection(InspectionRowDto dto) {
+        Long id = dto.getItemId();
+        validateId(id);
+        validateTitle(dto.getTitle(), id);
+        validateInspectionStartEnd(dto.getStart(), dto.getEnd(), id);
+    }
+
     public static void validateTitle(String title, Long id) {
         if (title == null || title.isEmpty() || title.length() > MAX_TITLE) {
             throw new PageException(
@@ -64,7 +76,7 @@ public class PostValidator {
     }
 
     public static void validateType(Integer type, Long id) {
-        if (type == null || type < TYPE_PREGNANCY_GUIDE || type > TYPE_CHILDCARE_EXAM) {
+        if (type == null || type < TYPE_PREGNANCY_GUIDE || type > TYPE_CHILDCARE_NUTRITION) {
             throw new PageException(
                     PAGE_TYPE_INVALID.getCode(),
                     "ID:" + id + " " + PAGE_TYPE_INVALID.getErrorMessage()
@@ -74,7 +86,7 @@ public class PostValidator {
 
     public static void validatePeriod(Integer start, Integer end, Integer type, Long id) {
         switch (type) {
-            case TYPE_PREGNANCY_EXAM, TYPE_CHILDCARE_EXAM:
+            case TYPE_INSPECTION:
                 if (start != PERIOD_TOTAL || end != PERIOD_TOTAL) {
                     validatePeriod(id);
                 }
@@ -117,6 +129,15 @@ public class PostValidator {
             throw new PageException(
                     PAGE_CATEGORY_INVALID.getCode(),
                     "ID:" + id + " " + PAGE_CATEGORY_INVALID.getErrorMessage()
+            );
+        }
+    }
+
+    private static void validateInspectionStartEnd(Integer start, Integer end, Long id) {
+        if (start == null || end == null || start > end || start < 10000 || end > 20024) {
+            throw new PageException(
+                    PAGE_TIME_INVALID.getCode(),
+                    "ID:" + id + " " + PAGE_TIME_INVALID.getErrorMessage()
             );
         }
     }

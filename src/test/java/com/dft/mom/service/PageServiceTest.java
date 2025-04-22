@@ -4,7 +4,7 @@ import com.dft.mom.ServiceTest;
 import com.dft.mom.domain.dto.page.res.CategoryResponseDto;
 import com.dft.mom.domain.dto.page.res.PageResponseDto;
 import com.dft.mom.domain.entity.post.BabyPage;
-import com.dft.mom.domain.entity.post.BabyPageItem;
+import com.dft.mom.domain.excel.ExcelInspectionService;
 import com.dft.mom.domain.excel.ExcelNutritionService;
 import com.dft.mom.domain.excel.ExcelPostService;
 import com.dft.mom.domain.repository.PageRepository;
@@ -23,9 +23,6 @@ import java.util.List;
 
 import static com.dft.mom.domain.util.PostConstants.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 
 @Transactional
 @ActiveProfiles("test")
@@ -47,6 +44,9 @@ public class PageServiceTest extends ServiceTest {
     @Autowired
     private ExcelNutritionService excelNutritionService;
 
+    @Autowired
+    private ExcelInspectionService excelInspectionService;
+
     @BeforeEach
     public void setUp() throws IOException {
         String route = "validate/post/success/post_valid.xlsx";
@@ -55,6 +55,10 @@ public class PageServiceTest extends ServiceTest {
 
         String nutritionRoute = "validate/nutrition/success/nutrition_valid.xlsx";
         excelNutritionService.createNutrition(nutritionRoute, TYPE_PREGNANCY_NUTRITION);
+        flushAndClear();
+
+        String inspectionRoute = "validate/inspection/success/inspection_valid.xlsx";
+        excelInspectionService.createInspection(inspectionRoute);
         flushAndClear();
     }
 
@@ -128,6 +132,22 @@ public class PageServiceTest extends ServiceTest {
         assertThat(카테고리리스트.size()).isEqualTo(1);
         assertThat(카테고리2000.getCategory()).isEqualTo(2000);
         assertThat(카테고리2000.getNutritionList().size()).isEqualTo(8);
+    }
+
+    @Test
+    @DisplayName("2. 페이지 조회 - 해피 케이스 - 5. 검사 페이지를 조회할 수 있다.")
+    public void 검사_페이지_조회() {
+        //given when
+        PageResponseDto 페이지_조회 = pageService.getCachedPage(TYPE_INSPECTION, PERIOD_TOTAL);
+        List<CategoryResponseDto> 카테고리리스트 = 페이지_조회.getCategoryList();
+        CategoryResponseDto 카테고리3000 = 카테고리리스트.get(0);
+
+        //then
+        assertThat(페이지_조회.getPageType()).isEqualTo(TYPE_INSPECTION);
+        assertThat(페이지_조회.getPagePeriod()).isEqualTo(PERIOD_TOTAL);
+        assertThat(카테고리리스트.size()).isEqualTo(1);
+        assertThat(카테고리3000.getCategory()).isEqualTo(3000);
+        assertThat(카테고리3000.getInspectionList().size()).isEqualTo(1);
     }
 
     @Test
@@ -226,6 +246,31 @@ public class PageServiceTest extends ServiceTest {
 
         assertThat(카테고리2000.getNutritionList().size()).isEqualTo(8);
         assertThat(카테고리2002.getNutritionList().size()).isEqualTo(5);
+    }
+
+    @Test
+    @DisplayName("3. 페이지 캐시 업데이트 - 해피 케이스 - 4. 검사 페이지를 업데이트 할 수 있다.")
+    public void 검사_페이지_업데이트() throws IOException {
+        //given
+        pageService.getCachedPage(TYPE_INSPECTION, PERIOD_TOTAL);
+        flushAndClear();
+
+        String route = "validate/inspection/success/inspection_valid_add.xlsx";
+        excelInspectionService.createInspection(route);
+        flushAndClear();
+
+        //when
+        PageResponseDto 페이지_조회 = pageService.putCachedPage(TYPE_INSPECTION, PERIOD_TOTAL);
+        List<CategoryResponseDto> 카테고리리스트 = 페이지_조회.getCategoryList();
+        CategoryResponseDto 카테고리3000 = 카테고리리스트.get(0);
+
+        //then
+        assertThat(페이지_조회.getPageType()).isEqualTo(TYPE_INSPECTION);
+        assertThat(페이지_조회.getPagePeriod()).isEqualTo(PERIOD_TOTAL);
+        assertThat(카테고리리스트.size()).isEqualTo(1);
+
+        assertThat(카테고리3000.getCategory()).isEqualTo(3000);
+        assertThat(카테고리3000.getInspectionList().size()).isEqualTo(3);
     }
 
     @Test

@@ -82,19 +82,17 @@ public class PostConstants {
 
     // INSPECTION POST
     public static final int INSPECTION_AND_VACCINATIONS = 3000;  // 검사 및 접종
-    public static final int INSPECTION_TABLE = 3001;  // 시기별 검사표
-    public static final int FIND_NEARBY_HOSPITALS = 3002;  // 근처 병원 찾기
+    public static final int FIND_NEARBY_HOSPITALS = 3001;  // 근처 병원 찾기
 
     // PAGE STATUS
-    public static final int TOTAL_PAGE_SIZE = 24;
+    public static final int TOTAL_PAGE_SIZE = 23;
 
     // PAGE TYPE
     public static final int TYPE_PREGNANCY_GUIDE = 0;
     public static final int TYPE_PREGNANCY_NUTRITION = 1;
-    public static final int TYPE_PREGNANCY_EXAM = 2;
+    public static final int TYPE_INSPECTION = 2;
     public static final int TYPE_CHILDCARE_GUIDE = 3;
     public static final int TYPE_CHILDCARE_NUTRITION = 4;
-    public static final int TYPE_CHILDCARE_EXAM = 5;
 
     // PERIOD
     public static final int PERIOD_TOTAL = 0;

@@ -145,8 +145,7 @@ public class PageService {
 
     @PostConstruct
     public void init() {
-        initPages(TYPE_PREGNANCY_EXAM,   List.of(PERIOD_TOTAL));
-        initPages(TYPE_CHILDCARE_EXAM,   List.of(PERIOD_TOTAL));
+        initPages(TYPE_INSPECTION,   List.of(PERIOD_TOTAL));
         initPages(TYPE_PREGNANCY_GUIDE,  FETAL_PERIOD_LIST);
         initPages(TYPE_CHILDCARE_GUIDE,  BABY_PERIOD_LIST);
         initPages(TYPE_PREGNANCY_NUTRITION,  List.of(PERIOD_TOTAL));
