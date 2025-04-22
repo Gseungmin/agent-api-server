@@ -13,8 +13,10 @@ import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -32,8 +34,19 @@ public class ExcelPostService {
     private final PageItemRepository pageItemRepository;
     private final PageService pageService;
 
-    @PostConstruct
-    public void init() throws IOException {
+    /* MultipartFile 업로드용 메서드 */
+    public synchronized void createPost(MultipartFile file) throws IOException {
+        try (InputStream is = file.getInputStream();
+             Workbook workbook = WorkbookFactory.create(is)) {
+            processPostWorkbook(workbook);
+        }
+    }
+
+    /* 기존 파일경로 기반 메서드 */
+    public synchronized void createPost(String excelFilePath) throws IOException {
+        try (Workbook workbook = loadWorkbook(excelFilePath)) {
+            processPostWorkbook(workbook);
+        }
     }
 
     /*
@@ -42,10 +55,8 @@ public class ExcelPostService {
      *    쿼리 : 1(페이지 조회) + 시트당 { 1(포스트와 연관관계된 페이지 아이템 조회) + 1(포스트 조회) + @(삽입 쿼리) }
      * 3. 모든 정리 후에 페이지 버전 업데이트 및 캐시 업데이트
      */
-    public synchronized void createPost(String excelFilePath) throws IOException {
-        Workbook workbook = loadWorkbook(excelFilePath);
+    private void processPostWorkbook(Workbook workbook) {
         List<BabyPage> pageList = pageService.getPageList();
-
         if (pageList.isEmpty()) {
             throw new PageException(
                     PAGE_NOT_EXIST.getCode(),

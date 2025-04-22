@@ -87,7 +87,7 @@ public class PostValidator {
 
     public static void validatePeriod(Integer start, Integer end, Integer type, Long id) {
         switch (type) {
-            case TYPE_INSPECTION:
+            case TYPE_INSPECTION, TYPE_CHILDCARE_NUTRITION, TYPE_PREGNANCY_NUTRITION:
                 if (start != PERIOD_TOTAL || end != PERIOD_TOTAL) {
                     validatePeriod(id);
                 }
