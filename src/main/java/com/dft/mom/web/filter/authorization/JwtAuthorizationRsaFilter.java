@@ -29,8 +29,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.dft.mom.domain.function.FunctionUtil.getToken;
-import static com.dft.mom.domain.util.CommonConstants.ACCESS_TOKEN;
-import static com.dft.mom.domain.util.CommonConstants.POSSIBLE_GET_ROUTE;
+import static com.dft.mom.domain.util.CommonConstants.*;
 import static com.dft.mom.domain.util.EntityConstants.MEMBER_STR;
 import static com.dft.mom.web.exception.ExceptionType.*;
 
@@ -50,7 +49,6 @@ public class JwtAuthorizationRsaFilter extends OncePerRequestFilter {
         return (pathMatcher.match("/", path)
                 || pathMatcher.match("/auth/apple", path)
                 || pathMatcher.match("/auth/kakao", path)
-                || pathMatcher.match("/auth/logout", path)
                 || pathMatcher.match("/auth/login/non", path)
                 || pathMatcher.match("/common/version-check", path));
     }
@@ -77,6 +75,9 @@ public class JwtAuthorizationRsaFilter extends OncePerRequestFilter {
             createAuthentication(request, claims, roles);
         } catch (ExpiredJwtException e) {
             setException(request, TOKEN_EXPIRED, chain, response);
+            return;
+        } catch (MemberException e) {
+            setException(request, UN_AUTH_NON_MEMBER, chain, response);
             return;
         } catch (Exception e) {
             setException(request, TOKEN_INVALID, chain, response);
@@ -122,7 +123,7 @@ public class JwtAuthorizationRsaFilter extends OncePerRequestFilter {
     }
 
     private void validateNonMember(HttpServletRequest request, List<String> roles) {
-        if (request.getMethod().equalsIgnoreCase("GET")) {
+        if (NON_MEMBER_ROUTE.contains(request.getRequestURI())) {
             return;
         }
 

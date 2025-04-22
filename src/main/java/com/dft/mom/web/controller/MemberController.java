@@ -22,6 +22,7 @@ import java.util.UUID;
 import static com.dft.mom.domain.function.FunctionUtil.getToken;
 import static com.dft.mom.domain.function.FunctionUtil.parseLong;
 import static com.dft.mom.domain.util.CommonConstants.REFRESH_TOKEN;
+import static com.dft.mom.domain.util.EntityConstants.MEMBER_STR;
 import static com.dft.mom.domain.util.EntityConstants.NON_MEMBER_STR;
 import static com.dft.mom.domain.validator.MemberValidator.*;
 
@@ -48,7 +49,7 @@ public class MemberController {
     @PostMapping("/login/non")
     public TokenResponseDto unAuthLogin() {
         String memberId = UUID.randomUUID().toString();
-        return loginService.createToken(memberId);
+        return loginService.createToken(memberId, NON_MEMBER_STR);
     }
 
     /*토큰 검증*/
@@ -66,13 +67,13 @@ public class MemberController {
         String memberRole = roleService.getMemberRole(authentication);
 
         if (Objects.equals(memberRole, NON_MEMBER_STR)) {
-            return loginService.createToken(authentication.getName());
+            return loginService.createToken(authentication.getName(), NON_MEMBER_STR);
         }
 
         Long memberId = parseLong(authentication.getName());
         String token = getToken(request);
         loginService.validateLogin(token, memberId.toString(), REFRESH_TOKEN);
-        return loginService.createToken(authentication.getName());
+        return loginService.createToken(authentication.getName(), MEMBER_STR);
     }
 
     /*카카오 회원 가입*/
@@ -107,6 +108,7 @@ public class MemberController {
         return loginService.createToken(member);
     }
 
+    /*로그아웃 가입*/
     @PostMapping("/logout")
     public void logout(Authentication authentication, HttpServletRequest request) {
         validateAuthentication(authentication, request);

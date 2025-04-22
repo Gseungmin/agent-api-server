@@ -59,9 +59,9 @@ public class LoginService {
     }
 
     /*리프레시 토큰 발급*/
-    public TokenResponseDto createToken(String memberId) {
-        String accessToken = jwtSigner.getJwtToken(memberId, ACCESS_TOKEN_EXPIRED);
-        String refreshToken = jwtSigner.getJwtToken(memberId, REFRESH_TOKEN_EXPIRED);
+    public TokenResponseDto createToken(String memberId, String role) {
+        String accessToken = jwtSigner.getJwtToken(memberId, role, ACCESS_TOKEN_EXPIRED);
+        String refreshToken = jwtSigner.getJwtToken(memberId, role, REFRESH_TOKEN_EXPIRED);
         loginRedisService.saveToken(memberId, accessToken, refreshToken);
         return new TokenResponseDto(accessToken, refreshToken);
     }
