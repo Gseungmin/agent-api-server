@@ -6,6 +6,7 @@ import com.dft.mom.domain.dto.post.PostRowDto;
 import com.dft.mom.web.exception.post.PageException;
 
 import java.util.List;
+import java.util.Map;
 
 import static com.dft.mom.domain.util.EntityConstants.*;
 import static com.dft.mom.domain.util.PostConstants.*;
@@ -139,6 +140,24 @@ public class PostValidator {
                     PAGE_TIME_INVALID.getCode(),
                     "ID:" + id + " " + PAGE_TIME_INVALID.getErrorMessage()
             );
+        }
+    }
+
+    private static final Map<Integer, List<Integer>> VALID_PERIODS = Map.of(
+            TYPE_INSPECTION,         List.of(PERIOD_TOTAL),
+            TYPE_PREGNANCY_GUIDE,    FETAL_PERIOD_LIST,
+            TYPE_CHILDCARE_GUIDE,    BABY_PERIOD_LIST,
+            TYPE_PREGNANCY_NUTRITION, List.of(PERIOD_TOTAL),
+            TYPE_CHILDCARE_NUTRITION, List.of(PERIOD_TOTAL)
+    );
+
+    public static void validateTypeAndPeriod(Integer type, Integer period) {
+        if (!VALID_PERIODS.containsKey(type)) {
+            throw new PageException(PAGE_NOT_EXIST.getCode(), PAGE_NOT_EXIST.getErrorMessage());
+        }
+
+        if (!VALID_PERIODS.get(type).contains(period)) {
+            throw new PageException(PAGE_NOT_EXIST.getCode(), PAGE_NOT_EXIST.getErrorMessage());
         }
     }
 }

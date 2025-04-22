@@ -19,7 +19,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.dft.mom.domain.util.PostConstants.*;
-import static com.dft.mom.web.exception.ExceptionType.PAGE_NOT_EXIST;
 
 @Service
 @RequiredArgsConstructor
@@ -31,9 +30,16 @@ public class PageService {
 
     /*페이지 캐시를 통해 조회 성능 개선*/
     @Transactional(readOnly = true)
-    @Cacheable(value = "pageCache", key = "'cached-page-' + #type + '-' + #period")
+    @Cacheable(
+            value = "pageCache",
+            key = "'cached-page-' + #type + '-' + #period",
+            sync = true)
     public PageResponseDto getCachedPage(Integer type, Integer period) {
         BabyPage babyPage = getPage(type, period);
+
+        if (babyPage == null) {
+            return null;
+        }
 
         if (babyPage.getType() == TYPE_PREGNANCY_GUIDE || babyPage.getType() == TYPE_CHILDCARE_GUIDE) {
             List<CategoryResponseDto> categoryList = getPageItemWithPost(babyPage);
@@ -55,6 +61,10 @@ public class PageService {
     public PageResponseDto putCachedPage(Integer type, Integer period) {
         BabyPage babyPage = getPage(type, period);
 
+        if (babyPage == null) {
+            return null;
+        }
+
         if (babyPage.getType() == TYPE_PREGNANCY_GUIDE || babyPage.getType() == TYPE_CHILDCARE_GUIDE) {
             List<CategoryResponseDto> categoryList = getPageItemWithPost(babyPage);
             return new PageResponseDto(babyPage, categoryList);
@@ -73,12 +83,7 @@ public class PageService {
     @Transactional(readOnly = true)
     public BabyPage getPage(Integer type, Integer period) {
         Optional<BabyPage> optPage = pageRepository.findBabyByTypeAndPeriod(type, period);
-
-        if (optPage.isEmpty()) {
-            throw new PageException(PAGE_NOT_EXIST.getCode(), PAGE_NOT_EXIST.getErrorMessage());
-        }
-
-        return optPage.get();
+        return optPage.orElse(null);
     }
 
     /*
