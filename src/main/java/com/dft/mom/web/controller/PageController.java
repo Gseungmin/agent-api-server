@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Objects;
 
 import static com.dft.mom.domain.validator.MemberValidator.validateAuthentication;
-
+import static com.dft.mom.domain.validator.PostValidator.validateTypeAndPeriod;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,9 +24,15 @@ public class PageController {
     public PageResponseDto getPage(Authentication authentication, HttpServletRequest request,
                                    @RequestParam(name = "type") Integer type,
                                    @RequestParam(name = "period") Integer period,
-                                   @RequestParam(name = "version") Integer version) {
+                                   @RequestParam(name = "version", required = false) Integer version) {
         validateAuthentication(authentication, request);
+        validateTypeAndPeriod(type, period);
+
         PageResponseDto cachedPage = pageService.getCachedPage(type, period);
+
+        if (cachedPage == null) {
+            return null;
+        }
 
         if (Objects.equals(cachedPage.getVersion(), version)) {
             return null;
