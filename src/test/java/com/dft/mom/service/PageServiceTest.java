@@ -287,7 +287,7 @@ public class PageServiceTest extends ServiceTest {
         flushAndClear();
 
         //when
-        cacheUpdateService.updateCachedItem();
+        cacheUpdateService.updateCachedPage();
         flushAndClear();
 
         PageResponseDto 페이지V2 = pageService.getCachedPage(TYPE_PREGNANCY_GUIDE, FETAL_PERIOD_5_8);

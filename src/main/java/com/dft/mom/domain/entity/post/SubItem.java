@@ -1,5 +1,6 @@
 package com.dft.mom.domain.entity.post;
 
+import com.dft.mom.domain.dto.post.SubItemDto;
 import com.dft.mom.domain.entity.base.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -8,8 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import static com.dft.mom.domain.util.PostConstants.NOT_QNA;
-import static com.dft.mom.domain.util.PostConstants.PRIORITY_MEDIUM;
+import static com.dft.mom.domain.util.EntityConstants.DEFAULT_PAGE_VERSION;
+import static com.dft.mom.domain.util.PostConstants.*;
 
 @Entity
 @Getter
@@ -52,11 +53,34 @@ public class SubItem extends BaseEntity {
     @JoinColumn(name = "inspectionId")
     private Inspection inspection;
 
-    public SubItem(Long itemId, String title, String content, Integer isQna) {
-        this.itemId = itemId;
-        this.title = title;
-        this.content = content;
-        this.isQna = isQna;
+    public void updateSubItem(SubItemDto data) {
+        this.title = data.getTitle();
+        this.content = data.getContent();
+        this.isQna = data.getIsQna() ? QNA : NOT_QNA;
+    }
+
+    public SubItem(SubItemDto data, Post post) {
+        this.itemId = data.getSubItemId();
+        this.title = data.getTitle();
+        this.content = data.getContent();
+        this.isQna = data.getIsQna() ? QNA : NOT_QNA;
+        addPost(post);
+    }
+
+    public SubItem(SubItemDto data, Inspection inspection) {
+        this.itemId = data.getSubItemId();
+        this.title = data.getTitle();
+        this.content = data.getContent();
+        this.isQna = data.getIsQna() ? QNA : NOT_QNA;
+        addInspection(inspection);
+    }
+
+    public SubItem(SubItemDto data, Nutrition nutrition) {
+        this.itemId = data.getSubItemId();
+        this.title = data.getTitle();
+        this.content = data.getContent();
+        this.isQna = data.getIsQna() ? QNA : NOT_QNA;
+        addNutrition(nutrition);
     }
 
     public void addPost(Post post) {
@@ -69,10 +93,8 @@ public class SubItem extends BaseEntity {
         inspection.getSubItemList().add(this);
     }
 
-    public void updateItem(String title, String content, Integer isQna, Integer priority) {
-        this.title = title;
-        this.content = content;
-        this.isQna = isQna;
-        this.priority = priority;
+    public void addNutrition(Nutrition nutrition) {
+        this.nutrition = nutrition;
+        nutrition.getSubItemList().add(this);
     }
 }

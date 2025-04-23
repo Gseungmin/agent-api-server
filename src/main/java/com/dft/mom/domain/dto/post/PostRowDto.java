@@ -2,6 +2,8 @@ package com.dft.mom.domain.dto.post;
 
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -16,4 +18,6 @@ public class PostRowDto {
     private Integer endPeriod;
     private Integer category;
     private Boolean caution;
+
+    private List<SubItemDto> subItemList;
 }

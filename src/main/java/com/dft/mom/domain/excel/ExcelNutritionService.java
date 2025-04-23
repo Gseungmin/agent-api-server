@@ -2,10 +2,8 @@ package com.dft.mom.domain.excel;
 
 import com.dft.mom.domain.dto.post.NutritionRowDto;
 import com.dft.mom.domain.dto.post.PostRowDto;
-import com.dft.mom.domain.entity.post.BabyPage;
-import com.dft.mom.domain.entity.post.BabyPageItem;
-import com.dft.mom.domain.entity.post.Nutrition;
-import com.dft.mom.domain.entity.post.Post;
+import com.dft.mom.domain.dto.post.SubItemDto;
+import com.dft.mom.domain.entity.post.*;
 import com.dft.mom.domain.repository.NutritionRepository;
 import com.dft.mom.domain.repository.PageItemRepository;
 import com.dft.mom.domain.repository.PageRepository;
@@ -46,7 +44,7 @@ public class ExcelNutritionService {
         }
     }
 
-    /* 기존 파일경로 기반 메서드 */
+    /* 테스트 업로드용 메서드 */
     public synchronized void createNutrition(String excelFilePath, Integer type) throws IOException {
         try (Workbook workbook = loadWorkbook(excelFilePath)) {
             processNutritionWorkbook(workbook, type);
@@ -79,6 +77,7 @@ public class ExcelNutritionService {
 
     private List<NutritionRowDto> parseSheet(Sheet sheet) {
         int lastRowNum = sheet.getLastRowNum();
+        Row headerRow = sheet.getRow(0);
         List<NutritionRowDto> itemList = new ArrayList<>();
 
         for (int rowIndex = 1; rowIndex <= lastRowNum; rowIndex++) {
@@ -105,6 +104,7 @@ public class ExcelNutritionService {
             dto.setSummary(getStringValue(row.getCell(2)));
             dto.setTag(getIntegerNumericValue(row.getCell(3)));
             dto.setCategory(getIntegerNumericValue(row.getCell(4)));
+            dto.setSubItemList(parseSubItems(row, headerRow, 5));
 
             itemList.add(dto);
         }
@@ -130,14 +130,42 @@ public class ExcelNutritionService {
             Nutrition item = existingMap.get(dto.getItemId());
             if (item != null) {
                 item.updateNutrition(dto);
-                itemList.add(item);
             } else {
-                Nutrition newItem = new Nutrition(dto);
-                itemList.add(newItem);
+                item = new Nutrition(dto);
             }
+
+            syncSubItems(item, dto.getSubItemList());
+            itemList.add(item);
         }
 
         return nutritionRepository.saveAll(itemList);
+    }
+
+    private void syncSubItems(
+            Nutrition item,
+            List<SubItemDto> subList
+    ) {
+        if (subList == null || subList.isEmpty()) {
+            return;
+        }
+
+        Map<Long, SubItem> existingSubItem = item.getSubItemList().stream()
+                .collect(Collectors.toMap(SubItem::getItemId, Function.identity()));
+
+        List<SubItem> updatedSubList = new ArrayList<>();
+        for (SubItemDto dto : subList) {
+            Long subId = dto.getSubItemId();
+
+            if (subId != null && existingSubItem.containsKey(subId)) {
+                SubItem subItem = existingSubItem.get(subId);
+                subItem.updateSubItem(dto);
+                updatedSubList.add(subItem);
+                continue;
+            }
+
+            SubItem subItem = new SubItem(dto, item);
+            updatedSubList.add(subItem);
+        }
     }
 
     private void syncPageItems(

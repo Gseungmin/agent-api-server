@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -16,4 +18,6 @@ public class InspectionRowDto {
     private String summary;
     private Integer start;
     private Integer end;
+
+    private List<SubItemDto> subItemList;
 }

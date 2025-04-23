@@ -1,7 +1,9 @@
 package com.dft.mom.domain.function;
 
+import com.dft.mom.domain.dto.post.SubItemDto;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.core.io.ClassPathResource;
@@ -9,6 +11,8 @@ import org.springframework.core.io.Resource;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ExcelFunctionUtil {
 
@@ -17,6 +21,28 @@ public class ExcelFunctionUtil {
         try (InputStream is = resource.getInputStream()) {
             return new XSSFWorkbook(is);
         }
+    }
+
+    public static List<SubItemDto> parseSubItems(Row row, Row headerRow, int startIndex) {
+        List<SubItemDto> subItems = new ArrayList<>();
+        int lastCellIndex = headerRow.getLastCellNum();
+
+        for (int cellIndex = startIndex; cellIndex + 2 < lastCellIndex; cellIndex += 3) {
+            Cell idCell = row.getCell(cellIndex, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
+            if (idCell == null) {
+                break;
+            }
+            Long subItemId = getLongNumericValue(idCell);
+            String title = getStringValue(row.getCell(cellIndex + 1, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL));
+            String content = getStringValue(row.getCell(cellIndex + 2, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL));
+
+            Cell headerCell = headerRow.getCell(cellIndex, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
+            String headerName = headerCell != null ? headerCell.getStringCellValue() : "";
+            boolean isQna = !headerName.startsWith("sub_item");
+
+            subItems.add(new SubItemDto(subItemId, title, content, isQna));
+        }
+        return subItems;
     }
 
     /* 숫자 셀 값 추출 */

@@ -12,6 +12,7 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.dft.mom.domain.util.EntityConstants.DEFAULT_PAGE_VERSION;
 import static com.dft.mom.domain.util.PostConstants.DEFAULT_POST;
 import static com.dft.mom.domain.util.PostConstants.PRIORITY_MEDIUM;
 
@@ -44,12 +45,15 @@ public class Post extends BaseEntity {
     @Column(nullable = false)
     private Integer priority = PRIORITY_MEDIUM;
 
+    @Column(nullable = false)
+    private Integer version = DEFAULT_PAGE_VERSION;
+
     @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "post")
     private List<BabyPageItem> babyPageItemList = new ArrayList<>();
 
     @JsonIgnore
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "post")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "post", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<SubItem> subItemList = new ArrayList<>();
 
     public Post(PostRowDto data) {

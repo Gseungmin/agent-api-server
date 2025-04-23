@@ -1,6 +1,7 @@
 package com.dft.mom.domain.excel;
 
 import com.dft.mom.domain.dto.excel.ExcelNutritionDto;
+import com.dft.mom.domain.dto.excel.ExcelSubItemDto;
 import com.dft.mom.web.exception.excel.ExcelException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -33,18 +34,27 @@ public class ExcelCreateService {
     private final ObjectMapper objectMapper;
 
     private static final String[] GUIDE_HEADERS = {
-            "itemId", "title", "summary", "tag", "category"
+            "itemId", "title", "summary", "tag", "category",
+            "sub_item_1_id", "sub_item_title1", "sub_item_content1",
+            "sub_item_2_id", "sub_item_title2", "sub_item_content2",
+            "sub_item_3_id", "sub_item_title3", "sub_item_content3",
+            "qna_item_1_id", "qna_item_question1", "qna_item_answer1",
+            "qna_item_2_id", "qna_item_question2", "qna_item_answer2"
     };
 
     private static final String[] POST_HEADERS = {
             "itemId", "title", "summary", "type", "start_period",
-            "end_period", "category", "caution"
+            "end_period", "category", "caution",
+            "sub_item_1_id", "sub_item_title1", "sub_item_content1",
+            "sub_item_2_id", "sub_item_title2", "sub_item_content2",
+            "qna_item_1_id", "qna_item_question1", "qna_item_answer1",
+            "qna_item_2_id", "qna_item_question2", "qna_item_answer2"
     };
 
     @PostConstruct
     public void init() throws IOException {
-        // exportJsonToExcel("research_post_2_3.json", "excel/createFetalPost.xlsx");
-        // exportNutritionJsonToExcel("research_nutrition.json", "excel/createNutrition.xlsx");
+//         exportJsonToExcel("research_caution_8_10.json", "excel/createFetalPost.xlsx");
+//         exportNutritionJsonToExcel("research_nutrition.json", "excel/createNutrition.xlsx");
     }
 
     /*
@@ -158,6 +168,7 @@ public class ExcelCreateService {
             row.createCell(5).setCellValue(data.getEnd_period());
             row.createCell(6).setCellValue(data.getCategory());
             row.createCell(7).setCellValue(data.isCaution());
+            appendSubjectList(row, data.getSubjectList(), 8);
         }
     }
 
@@ -173,6 +184,24 @@ public class ExcelCreateService {
             row.createCell(2).setCellValue(data.getSummary());
             row.createCell(3).setCellValue(data.getTag());
             row.createCell(4).setCellValue(data.getCategory());
+            appendSubjectList(row, data.getSubjectList(), 5);
+        }
+    }
+
+    private void appendSubjectList(
+            Row row,
+            List<ExcelSubItemDto> subjects,
+            int startCellIndex
+    ) {
+        if (subjects == null || subjects.isEmpty()) {
+            return;
+        }
+
+        int cellIndex = startCellIndex;
+        for (ExcelSubItemDto subj : subjects) {
+            row.createCell(cellIndex++).setCellValue("");
+            row.createCell(cellIndex++).setCellValue(subj.getTitle());
+            row.createCell(cellIndex++).setCellValue(subj.getContent());
         }
     }
 

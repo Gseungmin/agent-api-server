@@ -1,9 +1,8 @@
 package com.dft.mom.domain.excel;
 
 import com.dft.mom.domain.dto.post.PostRowDto;
-import com.dft.mom.domain.entity.post.BabyPage;
-import com.dft.mom.domain.entity.post.BabyPageItem;
-import com.dft.mom.domain.entity.post.Post;
+import com.dft.mom.domain.dto.post.SubItemDto;
+import com.dft.mom.domain.entity.post.*;
 import com.dft.mom.domain.repository.PageItemRepository;
 import com.dft.mom.domain.repository.PostRepository;
 import com.dft.mom.domain.service.PageService;
@@ -72,19 +71,16 @@ public class ExcelPostService {
         }
     }
 
-    /*
-     * PAGE ITEM 조회
-     */
+    /* PAGE ITEM 조회 */
     @Transactional(readOnly = true)
     public List<BabyPageItem> getPageItemList(List<Long> idList) {
         return pageItemRepository.findBabyPageItemByIdList(idList);
     }
 
-    /*
-     * POST 엑셀 시트 파싱
-     */
+    /* POST 엑셀 시트 파싱 */
     private List<PostRowDto> parseSheet(Sheet sheet) {
         int lastRowNum = sheet.getLastRowNum();
+        Row headerRow = sheet.getRow(0);
         List<PostRowDto> itemList = new ArrayList<>();
 
         for (int rowIndex = 1; rowIndex <= lastRowNum; rowIndex++) {
@@ -114,6 +110,7 @@ public class ExcelPostService {
                     && cautionCell.getBooleanCellValue();
             dto.setCaution(caution);
 
+            dto.setSubItemList(parseSubItems(row, headerRow, 8));
             itemList.add(dto);
         }
 
@@ -135,19 +132,46 @@ public class ExcelPostService {
         Map<Long, Post> existingMap = existingPostList.stream()
                 .collect(Collectors.toMap(Post::getItemId, Function.identity()));
 
-        List<Post> postList = new ArrayList<>();
+        List<Post> itemList = new ArrayList<>();
         for (PostRowDto dto : rows) {
-            Post post = existingMap.get(dto.getItemId());
-            if (post != null) {
-                post.updatePost(dto);
-                postList.add(post);
+            Post item = existingMap.get(dto.getItemId());
+            if (item != null) {
+                item.updatePost(dto);
             } else {
-                Post newPost = new Post(dto);
-                postList.add(newPost);
+                item = new Post(dto);
             }
+            syncSubItems(item, dto.getSubItemList());
+            itemList.add(item);
         }
 
-        return postRepository.saveAll(postList);
+        return postRepository.saveAll(itemList);
+    }
+
+    private void syncSubItems(
+            Post item,
+            List<SubItemDto> subList
+    ) {
+        if (subList == null || subList.isEmpty()) {
+            return;
+        }
+
+        Map<Long, SubItem> existingSubItem = item.getSubItemList().stream()
+                .collect(Collectors.toMap(SubItem::getItemId, Function.identity()));
+
+        List<SubItem> updatedSubList = new ArrayList<>();
+        for (SubItemDto dto : subList) {
+            Long subId = dto.getSubItemId();
+
+            if (subId != null && existingSubItem.containsKey(subId)) {
+                SubItem subItem = existingSubItem.get(subId);
+                subItem.updateSubItem(dto);
+                updatedSubList.add(subItem);
+                continue;
+            }
+
+            SubItem subItem = new SubItem(dto, item);
+            updatedSubList.add(subItem);
+        }
     }
 
     /*

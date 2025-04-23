@@ -4,6 +4,7 @@ import com.dft.mom.domain.dto.page.res.PageResponseDto;
 import com.dft.mom.domain.excel.ExcelInspectionService;
 import com.dft.mom.domain.excel.ExcelNutritionService;
 import com.dft.mom.domain.excel.ExcelPostService;
+import com.dft.mom.domain.service.CacheUpdateService;
 import com.dft.mom.domain.service.PageService;
 import com.dft.mom.domain.service.RoleService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,6 +30,7 @@ public class PageController {
     private final ExcelPostService postService;
     private final ExcelInspectionService inspectionService;
     private final RoleService roleService;
+    private final CacheUpdateService cacheUpdateService;
 
     /*페이지 조회*/
     @GetMapping
@@ -67,16 +69,40 @@ public class PageController {
         String role = roleService.getMemberRole(authentication);
         roleService.validateAdmin(role);
 
-        if (type.equals(TYPE_INSPECTION)) {
-            inspectionService.createInspection(file);
-            return;
+        if (type.equals(TYPE_PREGNANCY_GUIDE) || type.equals(TYPE_CHILDCARE_GUIDE)) {
+            postService.createPost(file);
         }
 
         if (type.equals(TYPE_CHILDCARE_NUTRITION) || type.equals(TYPE_PREGNANCY_NUTRITION)) {
             nutritionService.createNutrition(file, type);
-            return;
         }
 
-        postService.createPost(file);
+        inspectionService.createInspection(file);
+    }
+
+    /*페이지 업데이트*/
+    @PatchMapping
+    public void updatePage(
+            Authentication authentication,
+            HttpServletRequest request,
+            @RequestParam("type") Integer type
+    ) {
+        validateAuthentication(authentication, request);
+        String role = roleService.getMemberRole(authentication);
+        roleService.validateAdmin(role);
+
+        if (type.equals(TYPE_PREGNANCY_GUIDE) || type.equals(TYPE_CHILDCARE_GUIDE)) {
+            cacheUpdateService.updateCachedPost();
+        }
+
+        if (type.equals(TYPE_CHILDCARE_NUTRITION) || type.equals(TYPE_PREGNANCY_NUTRITION)) {
+            cacheUpdateService.updateCachedNutrition();
+        }
+
+        if (type.equals(TYPE_INSPECTION)) {
+            cacheUpdateService.updateCachedInspection();
+        }
+
+        cacheUpdateService.updateCachedPage();
     }
 }
