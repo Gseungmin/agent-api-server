@@ -52,7 +52,7 @@ public class Inspection extends BaseEntity {
     private List<BabyPageItem> babyPageItemList = new ArrayList<>();
 
     @JsonIgnore
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "inspection")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "inspection", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<SubItem> subItemList = new ArrayList<>();
 
     public Inspection(InspectionRowDto data) {

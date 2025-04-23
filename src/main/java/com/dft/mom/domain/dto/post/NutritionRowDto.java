@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -16,4 +18,6 @@ public class NutritionRowDto {
     private String summary;
     private Integer tag;
     private Integer category;
+
+    private List<SubItemDto> subItemList;
 }

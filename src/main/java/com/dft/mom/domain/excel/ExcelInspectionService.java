@@ -1,18 +1,15 @@
 package com.dft.mom.domain.excel;
 
 import com.dft.mom.domain.dto.post.InspectionRowDto;
-import com.dft.mom.domain.dto.post.NutritionRowDto;
+import com.dft.mom.domain.dto.post.SubItemDto;
 import com.dft.mom.domain.entity.post.BabyPage;
 import com.dft.mom.domain.entity.post.BabyPageItem;
 import com.dft.mom.domain.entity.post.Inspection;
-import com.dft.mom.domain.entity.post.Nutrition;
+import com.dft.mom.domain.entity.post.SubItem;
 import com.dft.mom.domain.repository.InspectionRepository;
-import com.dft.mom.domain.repository.NutritionRepository;
 import com.dft.mom.domain.repository.PageItemRepository;
-import com.dft.mom.domain.repository.PageRepository;
 import com.dft.mom.domain.service.PageService;
 import com.dft.mom.web.exception.post.PageException;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.stereotype.Service;
@@ -31,7 +28,6 @@ import java.util.stream.Collectors;
 import static com.dft.mom.domain.function.ExcelFunctionUtil.*;
 import static com.dft.mom.domain.util.PostConstants.TYPE_INSPECTION;
 import static com.dft.mom.domain.validator.PostValidator.validateInspectionRows;
-import static com.dft.mom.domain.validator.PostValidator.validateNutritionRows;
 import static com.dft.mom.web.exception.ExceptionType.PAGE_NOT_EXIST;
 
 @Service
@@ -43,7 +39,7 @@ public class ExcelInspectionService {
     private final PageItemRepository pageItemRepository;
     private final PageService pageService;
 
-    /*컨트롤러에서 MultipartFile로 받은 엑셀을 처리하는 신규 메서드*/
+    /* MultipartFile 업로드용 메서드 */
     public synchronized void createInspection(MultipartFile file) throws IOException {
         try (InputStream is = file.getInputStream();
              Workbook workbook = WorkbookFactory.create(is)) {
@@ -51,7 +47,7 @@ public class ExcelInspectionService {
         }
     }
 
-    /*파일 경로로 엑셀을 처리하는 기존 메서드*/
+    /* 테스트 업로드용 메서드 */
     public synchronized void createInspection(String excelFilePath) throws IOException {
         try (Workbook workbook = loadWorkbook(excelFilePath)) {
             processWorkbook(workbook);
@@ -84,6 +80,7 @@ public class ExcelInspectionService {
 
     private List<InspectionRowDto> parseSheet(Sheet sheet) {
         int lastRowNum = sheet.getLastRowNum();
+        Row headerRow = sheet.getRow(0);
         List<InspectionRowDto> itemList = new ArrayList<>();
 
         for (int rowIndex = 1; rowIndex <= lastRowNum; rowIndex++) {
@@ -110,7 +107,7 @@ public class ExcelInspectionService {
             dto.setSummary(getStringValue(row.getCell(2)));
             dto.setStart(getIntegerNumericValue(row.getCell(3)));
             dto.setEnd(getIntegerNumericValue(row.getCell(4)));
-
+            dto.setSubItemList(parseSubItems(row, headerRow, 5));
             itemList.add(dto);
         }
 
@@ -135,14 +132,41 @@ public class ExcelInspectionService {
             Inspection item = existingMap.get(dto.getItemId());
             if (item != null) {
                 item.updateInspection(dto);
-                itemList.add(item);
             } else {
-                Inspection newItem = new Inspection(dto);
-                itemList.add(newItem);
+                item = new Inspection(dto);
             }
+            syncSubItems(item, dto.getSubItemList());
+            itemList.add(item);
         }
 
         return inspectionRepository.saveAll(itemList);
+    }
+
+    private void syncSubItems(
+            Inspection item,
+            List<SubItemDto> subList
+    ) {
+        if (subList == null || subList.isEmpty()) {
+            return;
+        }
+
+        Map<Long, SubItem> existingSubItem = item.getSubItemList().stream()
+                .collect(Collectors.toMap(SubItem::getItemId, Function.identity()));
+
+        List<SubItem> updatedSubList = new ArrayList<>();
+        for (SubItemDto dto : subList) {
+            Long subId = dto.getSubItemId();
+
+            if (subId != null && existingSubItem.containsKey(subId)) {
+                SubItem subItem = existingSubItem.get(subId);
+                subItem.updateSubItem(dto);
+                updatedSubList.add(subItem);
+                continue;
+            }
+
+            SubItem subItem = new SubItem(dto, item);
+            updatedSubList.add(subItem);
+        }
     }
 
     private void syncPageItems(

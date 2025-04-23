@@ -2,6 +2,7 @@ package com.dft.mom.service;
 
 import com.dft.mom.ServiceTest;
 import com.dft.mom.domain.dto.page.res.CategoryResponseDto;
+import com.dft.mom.domain.dto.page.res.InspectionResponseDto;
 import com.dft.mom.domain.dto.page.res.PageResponseDto;
 import com.dft.mom.domain.entity.post.BabyPage;
 import com.dft.mom.domain.excel.ExcelInspectionService;
