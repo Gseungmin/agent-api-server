@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import static com.dft.mom.domain.util.EntityConstants.DEFAULT_PAGE_VERSION;
 import static com.dft.mom.domain.util.PostConstants.*;
 
 @Entity

@@ -12,6 +12,7 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.dft.mom.domain.util.EntityConstants.DEFAULT_PAGE_VERSION;
 import static com.dft.mom.domain.util.PostConstants.PRIORITY_MEDIUM;
 
 @Entity
@@ -42,6 +43,9 @@ public class Nutrition extends BaseEntity {
 
     @Column(nullable = false)
     private Integer priority = PRIORITY_MEDIUM;
+
+    @Column(nullable = false)
+    private Integer version = DEFAULT_PAGE_VERSION;
 
     @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "nutrition")

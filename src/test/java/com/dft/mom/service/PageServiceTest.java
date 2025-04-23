@@ -2,7 +2,6 @@ package com.dft.mom.service;
 
 import com.dft.mom.ServiceTest;
 import com.dft.mom.domain.dto.page.res.CategoryResponseDto;
-import com.dft.mom.domain.dto.page.res.InspectionResponseDto;
 import com.dft.mom.domain.dto.page.res.PageResponseDto;
 import com.dft.mom.domain.entity.post.BabyPage;
 import com.dft.mom.domain.excel.ExcelInspectionService;
@@ -288,7 +287,7 @@ public class PageServiceTest extends ServiceTest {
         flushAndClear();
 
         //when
-        cacheUpdateService.updateCachedItem();
+        cacheUpdateService.updateCachedPage();
         flushAndClear();
 
         PageResponseDto 페이지V2 = pageService.getCachedPage(TYPE_PREGNANCY_GUIDE, FETAL_PERIOD_5_8);
