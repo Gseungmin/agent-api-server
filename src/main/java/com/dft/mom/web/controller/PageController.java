@@ -69,18 +69,37 @@ public class PageController {
         String role = roleService.getMemberRole(authentication);
         roleService.validateAdmin(role);
 
-        if (type.equals(TYPE_PREGNANCY_GUIDE) || type.equals(TYPE_PREGNANCY_GUIDE)) {
+        if (type.equals(TYPE_PREGNANCY_GUIDE) || type.equals(TYPE_CHILDCARE_GUIDE)) {
             postService.createPost(file);
-            cacheUpdateService.updateCachedPost();
         }
 
         if (type.equals(TYPE_CHILDCARE_NUTRITION) || type.equals(TYPE_PREGNANCY_NUTRITION)) {
             nutritionService.createNutrition(file, type);
+        }
+
+        inspectionService.createInspection(file);
+    }
+
+    /*페이지 업데이트*/
+    @PatchMapping
+    public void updatePage(
+            Authentication authentication,
+            HttpServletRequest request,
+            @RequestParam("type") Integer type
+    ) {
+        validateAuthentication(authentication, request);
+        String role = roleService.getMemberRole(authentication);
+        roleService.validateAdmin(role);
+
+        if (type.equals(TYPE_PREGNANCY_GUIDE) || type.equals(TYPE_CHILDCARE_GUIDE)) {
+            cacheUpdateService.updateCachedPost();
+        }
+
+        if (type.equals(TYPE_CHILDCARE_NUTRITION) || type.equals(TYPE_PREGNANCY_NUTRITION)) {
             cacheUpdateService.updateCachedNutrition();
         }
 
         if (type.equals(TYPE_INSPECTION)) {
-            inspectionService.createInspection(file);
             cacheUpdateService.updateCachedInspection();
         }
 
