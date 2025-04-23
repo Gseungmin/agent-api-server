@@ -12,16 +12,16 @@ public interface SubItemRepository extends JpaRepository<SubItem, Long> {
 
     @Query("select si from SubItem si " +
             "join fetch si.post p " +
-            "where si.post.id = :id")
+            "where si.post.itemId = :id")
     List<SubItem> findSubItemListByPostId(Long id);
 
     @Query("select si from SubItem si " +
             "join fetch si.nutrition p " +
-            "where si.nutrition.id = :id")
+            "where si.nutrition.itemId = :id")
     List<SubItem> findSubItemListByNutritionId(Long id);
 
     @Query("select si from SubItem si " +
             "join fetch si.inspection p " +
-            "where si.inspection.id = :id")
+            "where si.inspection.itemId = :id")
     List<SubItem> findSubItemListByInspectionId(Long id);
 }

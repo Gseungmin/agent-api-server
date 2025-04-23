@@ -52,7 +52,7 @@ public class Nutrition extends BaseEntity {
     private List<BabyPageItem> babyPageItemList = new ArrayList<>();
 
     @JsonIgnore
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "nutrition")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "nutrition", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<SubItem> subItemList = new ArrayList<>();
 
     public Nutrition(NutritionRowDto data) {

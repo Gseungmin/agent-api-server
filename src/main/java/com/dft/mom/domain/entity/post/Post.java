@@ -53,7 +53,7 @@ public class Post extends BaseEntity {
     private List<BabyPageItem> babyPageItemList = new ArrayList<>();
 
     @JsonIgnore
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "post")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "post", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<SubItem> subItemList = new ArrayList<>();
 
     public Post(PostRowDto data) {

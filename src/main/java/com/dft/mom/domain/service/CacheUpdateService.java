@@ -44,7 +44,7 @@ public class CacheUpdateService {
 
         List<Post> postList = postRepository.findAll();
         for (Post item : postList) {
-            itemService.putCachedItem(TYPE_PREGNANCY_GUIDE, item.getId());
+            itemService.putCachedItem(TYPE_PREGNANCY_GUIDE, item.getItemId());
         }
     }
 
@@ -53,16 +53,16 @@ public class CacheUpdateService {
 
         List<Nutrition> nutritionList = nutritionRepository.findAll();
         for (Nutrition item : nutritionList) {
-            itemService.putCachedItem(TYPE_PREGNANCY_NUTRITION, item.getId());
+            itemService.putCachedItem(TYPE_PREGNANCY_NUTRITION, item.getItemId());
         }
     }
 
     public void updateCachedInspection() {
         inspectionRepository.incrementAllVersions();
-        List<Inspection> inspectionList = inspectionRepository.findAll();
 
+        List<Inspection> inspectionList = inspectionRepository.findAll();
         for (Inspection item : inspectionList) {
-            itemService.putCachedItem(TYPE_INSPECTION, item.getId());
+            itemService.putCachedItem(TYPE_INSPECTION, item.getItemId());
         }
     }
 
@@ -76,6 +76,19 @@ public class CacheUpdateService {
     /* 캐시 무효화 */
     public Boolean deleteCache(Integer type, Integer period) {
         String key = "pageCache::cached-page-" + type + "-" + period;
+        return redisTemplate.delete(key);
+    }
+
+    /* subItemCache 체크 */
+    public Boolean validateSubItemCache(Integer type, Long itemId) {
+        String key = "subItemCache::cached-sub-item-" + type + "-" + itemId;
+        Object cachedValue = redisTemplate.opsForValue().get(key);
+        return cachedValue != null;
+    }
+
+    /* subItemCache 무효화 */
+    public Boolean deleteSubItemCache(Integer type, Long itemId) {
+        String key = "subItemCache::cached-sub-item-" + type + "-" + itemId;
         return redisTemplate.delete(key);
     }
 }
