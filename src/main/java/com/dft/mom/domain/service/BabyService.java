@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import static com.dft.mom.domain.function.EntityFunctionUtil.getLastMenstrual;
 import static com.dft.mom.web.exception.ExceptionType.BABY_NOT_EXIST;
 import static com.dft.mom.web.exception.ExceptionType.UN_AUTH_BABY;
 
@@ -115,8 +116,11 @@ public class BabyService {
         if (dto.getName() != null) {
             baby.setName(dto.getName());
         }
+        if (dto.getLastMenstrual() != null) {
+            baby.setLastMoonDate(dto.getLastMenstrual());
+        }
         if (dto.getBirth() != null) {
-            baby.setBirth(dto.getBirth());
+            baby.updateBirth(dto.getBirth());
         }
         if (dto.getBirthTime() != null) {
             baby.setBirthTime(dto.getBirthTime());
@@ -127,9 +131,6 @@ public class BabyService {
         }
         if (dto.getGender() != null) {
             baby.setGender(dto.getGender());
-        }
-        if (dto.getLastMenstrual() != null) {
-            baby.setLastMoonDate(dto.getLastMenstrual());
         }
 
         return new BabyResponseDto(baby);
@@ -150,7 +151,7 @@ public class BabyService {
         if (dto.getType() != null
                 && !dto.getType().equals(baby.getType())) {
             baby.setType(dto.getType());
-            baby.setBirth(today);
+            baby.updateBirth(today);
         }
 
         return new BabyResponseDto(baby);

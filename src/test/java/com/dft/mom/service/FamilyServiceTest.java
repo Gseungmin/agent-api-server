@@ -4,6 +4,7 @@ import com.dft.mom.ServiceTest;
 import com.dft.mom.domain.dto.baby.req.ParentingCreateRequestDto;
 import com.dft.mom.domain.dto.baby.req.PregnancyCreateRequestDto;
 import com.dft.mom.domain.dto.member.req.MemberCreateRequestDto;
+import com.dft.mom.domain.entity.family.Baby;
 import com.dft.mom.domain.entity.family.Family;
 import com.dft.mom.domain.entity.member.Member;
 import com.dft.mom.domain.repository.FamilyRepository;
@@ -194,6 +195,23 @@ public class FamilyServiceTest extends ServiceTest {
         assertThat(가족5회원리스트.size()).isEqualTo(1);
         assertThat(가족6회원리스트.size()).isEqualTo(1);
         assertThat(가족7회원리스트.size()).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("2. 가족 연결 해제 - 해피 케이스 - 2. 가족 연결을 해제해도 새로운 가족이 생성된다.")
+    public void 가족_연결_해제_새로운_가족_생성() {
+        //given
+        Member 회원1재조회 = memberService.getMember(회원1.getId());
+
+        //when
+        familyService.disConnectFamily(회원1재조회);
+        flushAndClear();
+
+        //then
+        Member 회원1연결해제후재조회 = memberService.getMember(회원1.getId());
+        Family 가족2 = 회원1연결해제후재조회.getFamily();
+        Baby 새로운아이 = 가족2.getBabyList().get(0);
+        assertThat(새로운아이.getName()).isEqualTo("김둥이");
     }
 
     @Test

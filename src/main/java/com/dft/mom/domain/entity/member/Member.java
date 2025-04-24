@@ -83,7 +83,13 @@ public class Member extends BaseEntity {
         this.socialId = null;
         this.socialType = null;
         this.name = null;
+        this.birth = null;
+        this.gender = null;
+        this.relation = null;
         this.profileImage = null;
         this.device = null;
+        this.alarmList = null;
+        this.agreeList = null;
+        this.family = null;
     }
 }

@@ -30,7 +30,6 @@ public class Auth extends BaseEntity {
     @Column(name = "authId")
     private Long id;
 
-    private LocalDateTime lastChanged;
     private boolean isDelete = false;
 
     @Column(name = "deleteDate")
@@ -39,6 +38,7 @@ public class Auth extends BaseEntity {
     @Column(name = "phoneNumber", unique = true)
     @Convert(converter = EncryptorConverter.class)
     private String phoneNumber;
+    private LocalDateTime lastChanged;
 
     @JsonIgnore
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "auth")

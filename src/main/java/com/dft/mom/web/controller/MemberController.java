@@ -143,4 +143,17 @@ public class MemberController {
         Long memberId = parseLong(authentication.getName());
         loginRedisService.deleteTokenById(memberId.toString());
     }
+
+    /* 회원탈퇴 */
+    @DeleteMapping()
+    public void deleteMember(
+            Authentication authentication,
+            HttpServletRequest request
+    ) {
+        validateAuthentication(authentication, request);
+        Long memberId = parseLong(authentication.getName());
+        Member member = memberService.getMember(memberId);
+        memberService.deleteMember(member);
+        loginRedisService.deleteTokenById(memberId.toString());
+    }
 }

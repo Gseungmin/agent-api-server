@@ -9,6 +9,7 @@ import com.dft.mom.domain.entity.family.Family;
 import com.dft.mom.domain.entity.member.Auth;
 import com.dft.mom.domain.entity.member.Member;
 import com.dft.mom.domain.generator.CodeGenerator;
+import com.dft.mom.domain.repository.AuthRepository;
 import com.dft.mom.domain.repository.FamilyRepository;
 import com.dft.mom.domain.repository.MemberRepository;
 import com.dft.mom.web.exception.member.MemberException;
@@ -16,9 +17,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import static com.dft.mom.web.exception.ExceptionType.DELETED_MEMBER;
 import static com.dft.mom.web.exception.ExceptionType.MEMBER_NOT_EXIST;
 
 @Service
@@ -30,6 +33,7 @@ public class MemberService {
     private final FamilyRepository familyRepository;
     private final BabyService babyService;
     private final CodeGenerator codeGenerator;
+    private final AuthRepository authRepository;
 
     /* 회원만 조회 */
     @Transactional(readOnly = true)
@@ -162,5 +166,13 @@ public class MemberService {
         }
 
         return member;
+    }
+
+    /* 회원정보 탈퇴 */
+    public void deleteMember(Member member) {
+        member.deleteMember();
+        Auth auth = member.getAuth();
+        auth.setDeleteDate(LocalDate.now());
+        memberRepository.save(member);
     }
 }

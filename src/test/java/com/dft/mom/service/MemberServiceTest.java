@@ -14,6 +14,8 @@ import com.dft.mom.domain.entity.member.Member;
 import com.dft.mom.domain.repository.FamilyRepository;
 import com.dft.mom.domain.service.LoginService;
 import com.dft.mom.domain.service.MemberService;
+import com.dft.mom.web.exception.CommonException;
+import com.dft.mom.web.exception.member.MemberException;
 import io.jsonwebtoken.Claims;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -32,7 +34,11 @@ import java.util.UUID;
 
 import static com.dft.mom.CreateUtil.*;
 import static com.dft.mom.domain.util.EntityConstants.*;
+import static com.dft.mom.domain.util.PostConstants.TYPE_PREGNANCY_NUTRITION;
+import static com.dft.mom.web.exception.ExceptionType.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 @Transactional
@@ -319,5 +325,57 @@ public class MemberServiceTest extends ServiceTest {
         assertThat(회원5.getGender()).isEqualTo(가족연결후회원5재조회.getGender());
         assertThat(회원5.getName()).isEqualTo(가족연결후회원5재조회.getName());
         assertThat(2).isEqualTo(가족연결후회원5재조회.getBabyList().size());
+    }
+
+    @Test
+    @DisplayName("5. 회원 탈퇴 - 해피 케이스 - 1. 회원은 탈퇴할 수 있다.")
+    public void 회원은_탈퇴할수있다() {
+        //given
+        List<PregnancyCreateRequestDto> 임신중아이리스트 = createPregnancyListCreateRequestDto(LocalDate.now().plusDays(30), null, 5);
+        ParentingCreateRequestDto 태어난아이1 = createParentingCreateRequestDto("아이이름1", LocalDate.now().minusDays(10));
+
+        MemberCreateRequestDto 회원생성요청1 = createMemberCreateRequestDto(null, 임신중아이리스트, null);
+        MemberCreateRequestDto 회원생성요청2 = createMemberCreateRequestDto(null, null, List.of(태어난아이1));
+
+        Member 회원1 = memberService.createMember(회원생성요청1, UUID.randomUUID().toString());
+        Member 회원2 = memberService.createMember(회원생성요청2, UUID.randomUUID().toString());
+        flushAndClear();
+
+        //when
+        memberService.deleteMember(회원2);
+
+        //then
+        Member 회원1재조회 = memberService.getMemberOnly(회원1.getId());
+        Member 회원2재조회 = memberService.getMemberOnly(회원2.getId());
+
+        assertThat(회원1재조회.getFamily()).isNotNull();
+        assertThat(회원1재조회.getName()).isNotNull();
+        assertThat(회원1재조회.getSocialId()).isNotNull();
+
+        assertThat(회원2재조회.getFamily()).isNull();
+        assertThat(회원2재조회.getName()).isNull();
+        assertThat(회원2재조회.getSocialId()).isNull();
+    }
+
+    @Test
+    @DisplayName("5. 회원 탈퇴 - 해피 케이스 - 2. 탈퇴한 회원 조회시 예외가 터진자.")
+    public void 탈퇴한_회원_조회시_예외가터진다() {
+        //given
+        List<PregnancyCreateRequestDto> 임신중아이리스트 = createPregnancyListCreateRequestDto(LocalDate.now().plusDays(30), null, 5);
+
+        MemberCreateRequestDto 회원생성요청1 = createMemberCreateRequestDto(null, 임신중아이리스트, null);
+
+        Member 회원1 = memberService.createMember(회원생성요청1, UUID.randomUUID().toString());
+        flushAndClear();
+
+        memberService.deleteMember(회원1);
+
+        //when then
+        MemberException exception = assertThrows(MemberException.class, () -> {
+            memberService.getMemberResponse(회원1.getId());
+        });
+
+        assertEquals(MEMBER_NOT_EXIST.getCode(), exception.getCode());
+        assertEquals(MEMBER_NOT_EXIST.getErrorMessage(), exception.getErrorMessage());
     }
 }
