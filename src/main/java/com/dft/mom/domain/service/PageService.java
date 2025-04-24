@@ -36,26 +36,7 @@ public class PageService {
             sync = true
     )
     public PageResponseDto getCachedPage(Integer type, Integer period) {
-        BabyPage babyPage = getPage(type, period);
-
-        if (babyPage == null) {
-            return null;
-        }
-
-        if (babyPage.getType() == TYPE_PREGNANCY_GUIDE
-                || babyPage.getType() == TYPE_CHILDCARE_GUIDE) {
-            List<CategoryResponseDto> categoryList = getPageItemWithPost(babyPage);
-            return new PageResponseDto(babyPage, categoryList);
-        }
-
-        if (babyPage.getType() == TYPE_CHILDCARE_NUTRITION
-                || babyPage.getType() == TYPE_PREGNANCY_NUTRITION) {
-            List<CategoryResponseDto> categoryList = getPageItemWithNutrition(babyPage);
-            return new PageResponseDto(babyPage, categoryList);
-        }
-
-        List<CategoryResponseDto> categoryList = getPageItemWithInspection(babyPage);
-        return new PageResponseDto(babyPage, categoryList);
+        return loadPage(type, period);
     }
 
     /* 페이지 업데이트를 통해 캐시 미스 개선 */
@@ -65,8 +46,11 @@ public class PageService {
             key = "'cached-page-' + #type + '-' + #period"
     )
     public PageResponseDto putCachedPage(Integer type, Integer period) {
-        BabyPage babyPage = getPage(type, period);
+        return loadPage(type, period);
+    }
 
+    private PageResponseDto loadPage(Integer type, Integer period) {
+        BabyPage babyPage = getPage(type, period);
         if (babyPage == null) {
             return null;
         }
