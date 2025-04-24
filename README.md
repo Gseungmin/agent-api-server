@@ -2,13 +2,15 @@
 1. 캐시를 활용한 큐레이션 서비스
 2. 인가 서버 구축
 
-## 딥다이브
-### @Cacheable은 어떻게 동작할까?
-[AOP를 통해 관점지향프로그래밍](https://jseungmin.notion.site/AOP-1dde2fd91ae2803abad4cfbe1c81618d)
+## 아키텍처 설명
+### 버전 관리를 통해 캐시 성능 최적화
+[캐시 + 버전관리 + 장애조치를 통한 최적화 및 안정성있는 서비스 구축](https://jseungmin.notion.site/1dfe2fd91ae280be85d2f2e11db2e8b0?pvs=4)
 1. 캐시를 통해 조회 개선
 2. TTL을 통해 캐시 메모리 관리
 3. CachePut을 통해 캐시 업데이트 - 관리자 영역으로 무분별한 업데이트 제어
 4. 단일 요청점을 통해 캐시 미스 시 무분별하게 발생할 수 있는 데이터베이스 조회 제어
+5. 버전 관리를 통해 캐시 업데이트
+6. 캐시 장애 조치
 
 ### 인가 서버를 왜 만들까?
 [인가서버를 통해 LLM 서버의 보안 구축](https://jseungmin.notion.site/LLM-1dde2fd91ae28033a09bf009beea49e4)
