@@ -13,6 +13,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import java.time.LocalDate;
 
+import static com.dft.mom.domain.function.EntityFunctionUtil.getLastMenstrual;
 import static com.dft.mom.domain.util.EntityConstants.BABY;
 import static com.dft.mom.domain.util.EntityConstants.PREGNANT;
 
@@ -50,12 +51,17 @@ public class Baby extends BaseEntity {
     public Baby(PregnancyCreateRequestDto dto) {
         this.name = dto.getName();
         this.birth = dto.getExpectedBirth();
-        this.lastMoonDate = dto.getLastMenstrual();
+        this.lastMoonDate = getLastMenstrual(dto.getExpectedBirth(), dto.getLastMenstrual());
         this.type = PREGNANT;
     }
 
     public void addFamily(Family family) {
         family.getBabyList().add(this);
         this.setFamily(family);
+    }
+
+    public void updateBirth(LocalDate birth) {
+        this.birth = birth;
+        this.lastMoonDate = birth.minusWeeks(40);
     }
 }
