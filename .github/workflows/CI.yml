@@ -51,3 +51,18 @@ jobs:
 
     - name: Run tests
       run: ./gradlew test -Dspring.profiles.active=test
+
+    - name: docker build and push
+      run: |
+        docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+        docker build -t ${{ secrets.DOCKER_REPO }}/${{ secrets.DOCKER_TEST_IMAGE }} .
+        docker push ${{ secrets.DOCKER_REPO }}/${{ secrets.DOCKER_TEST_IMAGE }}
+
+    - name: Deploy
+      uses: appleboy/ssh-action@v0.1.10
+      with:
+        host: ${{ secrets.TEST_HOST }}
+        username: ubuntu
+        key: ${{ secrets.TEST_KEY }}
+        script: |
+          ./deploy.sh
