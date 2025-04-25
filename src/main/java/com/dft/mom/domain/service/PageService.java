@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.dft.mom.domain.util.CommonConstants.PAGE_CACHE_KEY;
 import static com.dft.mom.domain.util.PostConstants.*;
 
 @Service
@@ -31,7 +32,7 @@ public class PageService {
     /* 페이지 캐시를 통해 조회 성능 개선 */
     @Transactional(readOnly = true)
     @Cacheable(
-            value = "pageCache",
+            value = PAGE_CACHE_KEY,
             key = "'cached-page-' + #type + '-' + #period",
             sync = true
     )
@@ -42,7 +43,7 @@ public class PageService {
     /* 페이지 업데이트를 통해 캐시 미스 개선 */
     @Transactional(readOnly = true)
     @CachePut(
-            value = "pageCache",
+            value = PAGE_CACHE_KEY,
             key = "'cached-page-' + #type + '-' + #period"
     )
     public PageResponseDto putCachedPage(Integer type, Integer period) {

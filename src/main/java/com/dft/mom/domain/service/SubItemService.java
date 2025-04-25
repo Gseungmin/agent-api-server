@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static com.dft.mom.domain.util.CommonConstants.SUB_ITEM_CACHE_KEY;
 import static com.dft.mom.domain.util.PostConstants.*;
 
 @Service
@@ -24,7 +25,7 @@ public class SubItemService {
     /* 서브 아이템 캐시를 통해 조회 성능 개선 */
     @Transactional(readOnly = true)
     @Cacheable(
-            value = "subItemCache",
+            value = SUB_ITEM_CACHE_KEY,
             key = "'cached-sub-item-' + #type + '-' + #itemId",
             sync = true
     )
@@ -34,7 +35,7 @@ public class SubItemService {
 
     @Transactional(readOnly = true)
     @CachePut(
-            value = "subItemCache",
+            value = SUB_ITEM_CACHE_KEY,
             key = "'cached-sub-item-' + #type + '-' + #itemId"
     )
     public ItemResponseDto putCachedItem(Integer type, Long itemId) {
