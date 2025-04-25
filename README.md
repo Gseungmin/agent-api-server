@@ -4,7 +4,8 @@
 
 ## 아키텍처 설명
 ### 버전 관리를 통해 캐시 성능 최적화
-[캐시 + 버전관리 서비스 성능 개서](https://jseungmin.notion.site/1dfe2fd91ae280be85d2f2e11db2e8b0?pvs=4)
+[캐시 + 버전관리 서비스 성능 개선](https://jseungmin.notion.site/1dfe2fd91ae280be85d2f2e11db2e8b0?pvs=4)
+
 [캐시 이중화를 통해 안정성있는 서비스 환경 구축](https://jseungmin.notion.site/1e0e2fd91ae2802aace6e66bd7d76d2a?pvs=4)
 1. 캐시를 통해 조회 개선
 2. TTL을 통해 캐시 메모리 관리
