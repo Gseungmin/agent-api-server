@@ -1,11 +1,16 @@
 package com.dft.mom.web.config;
 
+import com.dft.mom.domain.cache.TwoLevelCacheManager;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.cache.interceptor.CacheErrorHandler;
 import org.springframework.cache.interceptor.SimpleCacheErrorHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
@@ -16,6 +21,10 @@ import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.time.Duration;
+import java.util.concurrent.TimeUnit;
+
+import static com.dft.mom.domain.util.CommonConstants.PAGE_CACHE_KEY;
+import static com.dft.mom.domain.util.CommonConstants.SUB_ITEM_CACHE_KEY;
 
 @Configuration
 @EnableCaching
@@ -26,11 +35,9 @@ public class CacheConfig {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(connectionFactory);
 
-        // 키와 해시 키는 문자열로 직렬화
         template.setKeySerializer(new StringRedisSerializer());
         template.setHashKeySerializer(new StringRedisSerializer());
 
-        // 값과 해시 값은 JSON 형식으로 직렬화
         template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
         template.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
         return template;
@@ -38,12 +45,34 @@ public class CacheConfig {
 
     @Bean
     public RedisCacheManager redisCacheManager(RedisConnectionFactory cf) {
-        RedisCacheConfiguration cfg = RedisCacheConfiguration.defaultCacheConfig()
+        RedisCacheConfiguration cacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
                 .entryTtl(Duration.ofDays(7))
                 .serializeValuesWith(
                         RedisSerializationContext.SerializationPair
                                 .fromSerializer(new GenericJackson2JsonRedisSerializer()));
-        return RedisCacheManager.builder(cf).cacheDefaults(cfg).build();
+        return RedisCacheManager.builder(cf).cacheDefaults(cacheConfiguration).build();
+    }
+
+    @Bean
+    public CaffeineCacheManager caffeineCacheManager() {
+        CaffeineCacheManager manager = new CaffeineCacheManager(
+                PAGE_CACHE_KEY, SUB_ITEM_CACHE_KEY
+        );
+
+        manager.setCaffeine(Caffeine.newBuilder()
+                .maximumSize(10000)
+                .expireAfterWrite(60, TimeUnit.MINUTES));
+
+        return manager;
+    }
+
+    @Bean
+    @Primary
+    CacheManager cacheManager(
+            RedisCacheManager redisCacheManager,
+            CaffeineCacheManager caffeineCacheManager
+    ) {
+        return new TwoLevelCacheManager(redisCacheManager, caffeineCacheManager);
     }
 
     @Bean

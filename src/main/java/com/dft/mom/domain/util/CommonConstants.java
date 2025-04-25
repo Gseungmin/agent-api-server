@@ -23,4 +23,8 @@ public class CommonConstants {
 
     //EPOCH
     public static final long EPOCH = 1740787200000L;
+
+    //CACHE KEY
+    public static final String PAGE_CACHE_KEY = "pageCache";
+    public static final String SUB_ITEM_CACHE_KEY = "subItemCache";
 }
