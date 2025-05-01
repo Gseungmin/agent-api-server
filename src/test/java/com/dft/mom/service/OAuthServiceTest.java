@@ -39,15 +39,28 @@ public class OAuthServiceTest extends ServiceTest {
     }
 
     @Test
-    @DisplayName("1. 비회원은 5번까지 접근이 가능하다.")
+    @DisplayName("1. 비회원은 3번까지 접근이 가능하다.")
     public void 비회원은_다섯번까지_접근이_가능하다() {
         assertDoesNotThrow(() -> {
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < 3; i++) {
                 authService.increaseAndValidate("1", NON_MEMBER_STR);
             }
         });
 
         MemberException ex = assertThrows(MemberException.class, () -> authService.increaseAndValidate("1", NON_MEMBER_STR));
         assertEquals(MORE_FOR_MEMBER.getCode(), ex.getCode());
+    }
+
+    @Test
+    @DisplayName("2. 회원은 15번까지 접근이 가능하다.")
+    public void 비회원은_15번까지_접근이_가능하다() {
+        assertDoesNotThrow(() -> {
+            for (int i = 0; i < 15; i++) {
+                authService.increaseAndValidate("1", MEMBER_STR);
+            }
+        });
+
+        MemberException ex = assertThrows(MemberException.class, () -> authService.increaseAndValidate("1", MEMBER_STR));
+        assertEquals(QUOTA_EXCEED.getCode(), ex.getCode());
     }
 }

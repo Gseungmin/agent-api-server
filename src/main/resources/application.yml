@@ -2,6 +2,11 @@ server:
   id: 1
   type: ${SERVER_TYPE:prod}
 
+oauth:
+  header-name: X-Internal-Secret
+  new-secret: ${AUTH_NEW_SECRET:abcde}
+  old-secret: ${AUTH_OLD_SECRET:abcde}
+
 spring:
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/momagent}

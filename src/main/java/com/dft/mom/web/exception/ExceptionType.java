@@ -31,6 +31,7 @@ public enum ExceptionType {
     UN_AUTH_NON_MEMBER(10005, "로그인 먼저 해주세요"),
     MORE_FOR_MEMBER(10006, "더 많은 사용을 위해 로그인해주세요!"),
     DELETED_MEMBER(10007, "탈퇴한 회원입니다"),
+    QUOTA_EXCEED(10008, "일일 사용량을 초과하였습니다"),
 
     /**
      * FAMILY Exception
