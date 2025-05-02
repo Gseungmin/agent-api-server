@@ -53,9 +53,9 @@ public class ExcelCreateService {
 
     @PostConstruct
     public void init() throws IOException {
-         exportJsonToExcel("research_post_8_10.json", "excel/createFetalPost.xlsx");
+//         exportJsonToExcel("research_post_8_10.json", "excel/createFetalPost.xlsx");
 //         exportJsonToExcel("research_caution_8_10.json", "excel/createFetalPost.xlsx");
-         exportNutritionJsonToExcel("research_nutrition.json", "excel/createNutrition.xlsx");
+//         exportNutritionJsonToExcel("research_nutrition.json", "excel/createNutrition.xlsx");
     }
 
     /*

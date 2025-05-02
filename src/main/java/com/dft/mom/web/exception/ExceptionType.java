@@ -19,6 +19,7 @@ public enum ExceptionType {
     ENCRYPT_FAIL(90102, "암호화에 실패하였습니다."),
     DECRYPT_FAIL(90103, "복호화에 실패하였습니다."),
     TIME_INVALID(90104, "과거로 돌아갈 수 없습니다."),
+    NOT_ALLOWED_LLM_SERVER(90200, "허용되지 않은 LLM 서버 연결입니다"),
 
     /**
      * Member Exception

@@ -17,6 +17,7 @@ public class OAuthController {
     private final RoleService roleService;
     private final CacheOAuthService authService;
 
+    @GetMapping
     public void validateOAuth(
             Authentication authentication,
             HttpServletRequest request
