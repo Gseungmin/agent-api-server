@@ -19,6 +19,7 @@ public enum ExceptionType {
     ENCRYPT_FAIL(90102, "암호화에 실패하였습니다."),
     DECRYPT_FAIL(90103, "복호화에 실패하였습니다."),
     TIME_INVALID(90104, "과거로 돌아갈 수 없습니다."),
+    NOT_ALLOWED_LLM_SERVER(90200, "허용되지 않은 LLM 서버 연결입니다"),
 
     /**
      * Member Exception
@@ -31,6 +32,7 @@ public enum ExceptionType {
     UN_AUTH_NON_MEMBER(10005, "로그인 먼저 해주세요"),
     MORE_FOR_MEMBER(10006, "더 많은 사용을 위해 로그인해주세요!"),
     DELETED_MEMBER(10007, "탈퇴한 회원입니다"),
+    QUOTA_EXCEED(10008, "일일 사용량을 초과하였습니다"),
 
     /**
      * FAMILY Exception

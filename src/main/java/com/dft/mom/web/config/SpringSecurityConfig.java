@@ -8,6 +8,7 @@ import com.dft.mom.web.filter.authorization.JwtAuthorizationRsaFilter;
 import com.dft.mom.web.filter.exception.CustomAuthenticationEntryPoint;
 import com.dft.mom.web.filter.exception.CustomAuthenticationFailureHandler;
 import com.dft.mom.web.filter.security.BlacklistFilter;
+import com.dft.mom.web.filter.security.LLMAuthFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,6 +30,7 @@ public class SpringSecurityConfig {
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
     private final LoginService loginService;
     private final BlacklistFilter blacklistFilter;
+    private final LLMAuthFilter llmAuthFilter;
     private final JwtAuthorizationRsaFilter jwtAuthorizationRsaFilter;
 
     private String[] permitAllUrlPatterns() {
@@ -73,6 +75,7 @@ public class SpringSecurityConfig {
                 .addFilter(jwtKakaoAuthenticationFilter)
                 .addFilter(jwtAppleAuthenticationFilter)
                 .addFilterBefore(jwtAuthorizationRsaFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(llmAuthFilter, JwtAuthorizationRsaFilter.class)
                 .addFilterBefore(blacklistFilter, CorsFilter.class);
 
         return http.build();

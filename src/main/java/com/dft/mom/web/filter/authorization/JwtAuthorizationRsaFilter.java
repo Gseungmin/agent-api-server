@@ -61,7 +61,6 @@ public class JwtAuthorizationRsaFilter extends OncePerRequestFilter {
     ) throws IOException, ServletException {
         try {
             String token = getToken(request);
-
             if (token == null) {
                 setException(request, TOKEN_NOT_EXIST, chain, response);
                 return;
@@ -136,7 +135,7 @@ public class JwtAuthorizationRsaFilter extends OncePerRequestFilter {
             return true;
         }
 
-        return POSSIBLE_GET_ROUTE.contains(request.getRequestURI());
+        return VALIDATE_GET_ROUTE.contains(request.getRequestURI());
     }
 
     private void validateNonMember(

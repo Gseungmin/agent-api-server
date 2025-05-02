@@ -17,7 +17,6 @@ public class OAuthController {
     private final RoleService roleService;
     private final CacheOAuthService authService;
 
-    /*페이지 조회*/
     @GetMapping
     public void validateOAuth(
             Authentication authentication,

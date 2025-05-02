@@ -13,7 +13,10 @@ public class CommonConstants {
     public static final String REFRESH_TOKEN = "refreshToken";
 
     //ROUTE FOR NO AUTH
-    public static final Set<String> POSSIBLE_GET_ROUTE = Set.of();
+    public static final Set<String> VALIDATE_GET_ROUTE = Set.of(
+            "/oauth"
+    );
+
     public static final Set<String> NON_MEMBER_ROUTE = Set.of(
             "/auth/validate",
             "/auth/reissue",

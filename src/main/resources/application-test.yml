@@ -2,6 +2,11 @@ server:
   id: 1
   type: test
 
+oauth:
+  header-name: X-Internal-Secret
+  new-secret: abcde
+  old-secret: abcde
+
 spring:
   config.activate.on-profile: test
 
