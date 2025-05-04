@@ -2,6 +2,9 @@ server:
   id: 1
   type: test
 
+admin:
+  secret: 1234
+
 oauth:
   header-name: X-Internal-Secret
   new-secret: abcde

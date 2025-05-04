@@ -38,6 +38,7 @@ public class SpringSecurityConfig {
                 "/",
                 "/auth/kakao",
                 "/auth/login/non",
+                "/auth/login/admin",
                 "/auth/apple",
                 "/common/version-check"
         };
