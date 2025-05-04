@@ -79,6 +79,7 @@ public class ExcelNutritionService {
         int lastRowNum = sheet.getLastRowNum();
         Row headerRow = sheet.getRow(0);
         List<NutritionRowDto> itemList = new ArrayList<>();
+        FormulaEvaluator evaluator = sheet.getWorkbook().getCreationHelper().createFormulaEvaluator();
 
         for (int rowIndex = 1; rowIndex <= lastRowNum; rowIndex++) {
             Row row = sheet.getRow(rowIndex);
@@ -99,7 +100,7 @@ public class ExcelNutritionService {
             }
 
             NutritionRowDto dto = new NutritionRowDto();
-            dto.setItemId(getLongNumericValue(row.getCell(0)));
+            dto.setItemId(getLongNumericValue(row.getCell(0), evaluator));
             dto.setTitle(getStringValue(row.getCell(1)));
             dto.setSummary(getStringValue(row.getCell(2)));
             dto.setTag(getIntegerNumericValue(row.getCell(3)));

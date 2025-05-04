@@ -1,10 +1,7 @@
 package com.dft.mom.domain.function;
 
 import com.dft.mom.domain.dto.post.SubItemDto;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -26,13 +23,16 @@ public class ExcelFunctionUtil {
     public static List<SubItemDto> parseSubItems(Row row, Row headerRow, int startIndex) {
         List<SubItemDto> subItems = new ArrayList<>();
         int lastCellIndex = headerRow.getLastCellNum();
+        FormulaEvaluator evaluator = row.getSheet().getWorkbook().getCreationHelper().createFormulaEvaluator();
 
         for (int cellIndex = startIndex; cellIndex + 2 < lastCellIndex; cellIndex += 3) {
             Cell idCell = row.getCell(cellIndex, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
+
             if (idCell == null) {
                 break;
             }
-            Long subItemId = getLongNumericValue(idCell);
+
+            Long subItemId = getLongNumericValue(idCell, evaluator);
             String title = getStringValue(row.getCell(cellIndex + 1, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL));
             String content = getStringValue(row.getCell(cellIndex + 2, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL));
 
@@ -46,12 +46,18 @@ public class ExcelFunctionUtil {
     }
 
     /* 숫자 셀 값 추출 */
-    public static Long getLongNumericValue(Cell cell) {
+    public static Long getLongNumericValue(Cell cell, FormulaEvaluator evaluator) {
         if (cell == null) {
             return null;
         }
         if (cell.getCellType() == CellType.NUMERIC) {
             return (long) cell.getNumericCellValue();
+        }
+        if (cell.getCellType() == CellType.FORMULA) {
+            CellValue cv = evaluator.evaluate(cell);
+            return cv != null && cv.getCellType() == CellType.NUMERIC
+                    ? (long) cv.getNumberValue()
+                    : null;
         }
         if (cell.getCellType() == CellType.STRING) {
             try {
