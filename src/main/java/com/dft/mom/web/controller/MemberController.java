@@ -1,5 +1,6 @@
 package com.dft.mom.web.controller;
 
+import com.dft.mom.domain.dto.member.req.AdminRequestDto;
 import com.dft.mom.domain.dto.member.req.MemberAppleCreateRequestDto;
 import com.dft.mom.domain.dto.member.req.MemberCreateRequestDto;
 import com.dft.mom.domain.dto.member.res.MemberStatusResponseDto;
@@ -11,8 +12,10 @@ import com.dft.mom.domain.service.FamilyService;
 import com.dft.mom.domain.service.LoginService;
 import com.dft.mom.domain.service.MemberService;
 import com.dft.mom.domain.service.RoleService;
+import com.dft.mom.web.exception.member.MemberException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,9 +25,9 @@ import java.util.UUID;
 import static com.dft.mom.domain.function.FunctionUtil.getToken;
 import static com.dft.mom.domain.function.FunctionUtil.parseLong;
 import static com.dft.mom.domain.util.CommonConstants.REFRESH_TOKEN;
-import static com.dft.mom.domain.util.EntityConstants.MEMBER_STR;
-import static com.dft.mom.domain.util.EntityConstants.NON_MEMBER_STR;
+import static com.dft.mom.domain.util.EntityConstants.*;
 import static com.dft.mom.domain.validator.MemberValidator.*;
+import static com.dft.mom.web.exception.ExceptionType.ADMIN_ONLY;
 
 @RestController
 @RequiredArgsConstructor
@@ -36,6 +39,9 @@ public class MemberController {
     private final FamilyService familyService;
     private final MemberService memberService;
     private final LoginRedisService loginRedisService;
+
+    @Value("${admin.secret}")
+    private String secret;
 
     /* 카카오 로그인 */
     @PostMapping("/login/kakao")
@@ -52,6 +58,19 @@ public class MemberController {
     public TokenResponseDto unAuthLogin() {
         String memberId = UUID.randomUUID().toString();
         return loginService.createToken(memberId, NON_MEMBER_STR);
+    }
+
+    /* 어드민 토큰 발급 */
+    @PostMapping("/login/admin")
+    public TokenResponseDto adminLogin(
+            @RequestBody AdminRequestDto dto
+    ) {
+        if (!Objects.equals(dto.getSecret(), secret)) {
+            throw new MemberException(ADMIN_ONLY.getCode(), ADMIN_ONLY.getErrorMessage());
+        }
+
+        String memberId = UUID.randomUUID().toString();
+        return loginService.createToken(memberId, ADMIN_STR);
     }
 
     /* 토큰 검증 */

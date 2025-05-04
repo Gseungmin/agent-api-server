@@ -2,6 +2,9 @@ server:
   id: 1
   type: ${SERVER_TYPE:prod}
 
+admin:
+  secret: ${ADMIN_SECRET:1234}
+
 oauth:
   header-name: X-Internal-Secret
   new-secret: ${AUTH_NEW_SECRET:abcde}

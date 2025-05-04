@@ -50,6 +50,7 @@ public class JwtAuthorizationRsaFilter extends OncePerRequestFilter {
                 || pathMatcher.match("/auth/apple", path)
                 || pathMatcher.match("/auth/kakao", path)
                 || pathMatcher.match("/auth/login/non", path)
+                || pathMatcher.match("/auth/login/admin", path)
                 || pathMatcher.match("/common/version-check", path));
     }
 

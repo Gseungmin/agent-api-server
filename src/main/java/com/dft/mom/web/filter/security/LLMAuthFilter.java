@@ -12,7 +12,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 import static com.dft.mom.web.exception.ExceptionType.NOT_ALLOWED_LLM_SERVER;
-import static com.dft.mom.web.exception.ExceptionType.TOKEN_EXPIRED;
 
 @Component
 @RequiredArgsConstructor
