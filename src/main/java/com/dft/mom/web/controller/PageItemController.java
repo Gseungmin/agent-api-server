@@ -27,16 +27,20 @@ public class PageItemController {
             @RequestParam(name = "version", required = false) Integer version
     ) {
         validateAuthentication(authentication, request);
+        System.out.println("START");
         ItemResponseDto cachedItem = itemService.getCachedItem(type, itemId);
 
         if (cachedItem == null) {
+            System.out.println("PRE-END-1");
             return null;
         }
 
         if (Objects.equals(cachedItem.getVersion(), version)) {
+            System.out.println("PRE-END-2");
             return null;
         }
 
+        System.out.println("END");
         return cachedItem;
     }
 }

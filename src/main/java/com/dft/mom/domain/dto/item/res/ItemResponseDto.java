@@ -23,6 +23,7 @@ public class ItemResponseDto {
         this.id = item.getItemId();
         this.title = item.getTitle();
         this.content = item.getContent();
+        this.version = item.getVersion();
         this.subItemList = subItemList;
     }
 
@@ -30,6 +31,7 @@ public class ItemResponseDto {
         this.id = item.getItemId();
         this.title = item.getTitle();
         this.content = item.getContent();
+        this.version = item.getVersion();
         this.subItemList = subItemList;
     }
 
@@ -37,6 +39,7 @@ public class ItemResponseDto {
         this.id = item.getItemId();
         this.title = item.getTitle();
         this.content = item.getContent();
+        this.version = item.getVersion();
         this.subItemList = subItemList;
     }
 }

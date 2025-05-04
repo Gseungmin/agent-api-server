@@ -18,6 +18,8 @@ public class InspectionResponseDto {
     private String content;
     private Integer priority;
     private Integer category;
+    private Integer start;
+    private Integer end;
 
     public InspectionResponseDto(Inspection inspection) {
         this.itemId = inspection.getItemId();
@@ -25,5 +27,7 @@ public class InspectionResponseDto {
         this.content = inspection.getContent();
         this.priority = inspection.getPriority();
         this.category = inspection.getCategory();
+        this.start = inspection.getStart();
+        this.end = inspection.getEnd();
     }
 }
