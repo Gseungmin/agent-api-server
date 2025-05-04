@@ -53,9 +53,9 @@ public class ExcelCreateService {
 
     @PostConstruct
     public void init() throws IOException {
-//         exportJsonToExcel("research_post_8_10.json", "excel/createFetalPost.xlsx");
-//         exportJsonToExcel("research_caution_8_10.json", "excel/createFetalPost.xlsx");
-//         exportNutritionJsonToExcel("research_nutrition.json", "excel/createNutrition.xlsx");
+//         exportJsonToExcel("research_post_2_3.json", "excel/createFetalPost.xlsx");
+//         exportJsonToExcel("baby_post_0_0.json", "excel/createBabyPost.xlsx");
+//         exportNutritionJsonToExcel("baby_food.json", "excel/createNutrition.xlsx");
     }
 
     /*
@@ -144,7 +144,10 @@ public class ExcelCreateService {
     /* 시트 헤더 생성 */
     private void createHeader(Sheet sheet, String sheetName) {
         Row header = sheet.createRow(0);
-        String[] headers = sheetName.equals("영양가이드")
+        String[] headers = (sheetName.equals("영양가이드")
+                || sheetName.equals("모유수유가이드")
+                || sheetName.equals("이유식가이드")
+                || sheetName.equals("분유가이드"))
                 ? GUIDE_HEADERS
                 : POST_HEADERS;
 
@@ -227,9 +230,13 @@ public class ExcelCreateService {
     private String createSheetName(String jsonFileName) {
         return switch (jsonFileName) {
             case "research_nutrition.json" -> "영양가이드";
+            case "baby_breast.json" -> "모유수유가이드";
+            case "baby_formular.json" -> "분유가이드";
+            case "baby_food.json" -> "이유식가이드";
             case "research_post_2_3.json" -> "임신가이드_2_3달";
             case "research_post_4_7.json" -> "임신가이드_4_7달";
             case "research_post_8_10.json" -> "임신가이드_8_10달";
+            case "baby_post_0_0.json" -> "육아가이드_0_0달";
             case "baby_post_1_2.json" -> "육아가이드_1_2달";
             case "baby_post_3_4.json" -> "육아가이드_3_4달";
             case "baby_post_5_6.json" -> "육아가이드_5_6달";
@@ -239,6 +246,7 @@ public class ExcelCreateService {
             case "baby_post_13_15.json" -> "육아가이드_13_15달";
             case "baby_post_16_18.json" -> "육아가이드_16_18달";
             case "baby_post_19_24.json" -> "육아가이드_19_24달";
+            case "baby_mom.json" -> "육아가이드_산모관리";
             case "baby_caution.json" -> "육아가이드_주의";
             case "baby_attachment.json" -> "육아가이드_애착형성";
             case "baby_sleep.json" -> "육아가이드_수면관리";

@@ -90,7 +90,7 @@ public class ExcelNutritionServiceTest extends ServiceTest {
     }
 
     @Test
-    @DisplayName("1. NUTRITION 생성 - 엣지 케이스 - 6. NUTRITION TITLE 없음")
+    @DisplayName("1. NUTRITION 생성 - 엣지 케이스 - 6. NUTRITION SUMMARY 없음")
     public void NUTRITION_SUMMARY_없음() {
         String route = "validate/nutrition/invalid/nutrition_invalid_summary_null.xlsx";
 
@@ -102,7 +102,7 @@ public class ExcelNutritionServiceTest extends ServiceTest {
     }
 
     @Test
-    @DisplayName("1. NUTRITION 생성 - 엣지 케이스 - 7. NUTRITION TITLE 초과")
+    @DisplayName("1. NUTRITION 생성 - 엣지 케이스 - 7. NUTRITION SUMMARY 초과")
     public void NUTRITION_SUMMARY_초과() {
         String route = "validate/nutrition/invalid/nutrition_invalid_summary_exceed.xlsx";
 

@@ -36,8 +36,7 @@ import java.util.UUID;
 
 import static com.dft.mom.CreateUtil.*;
 import static com.dft.mom.domain.util.CommonConstants.ACCESS_TOKEN;
-import static com.dft.mom.domain.util.EntityConstants.MEMBER_STR;
-import static com.dft.mom.domain.util.EntityConstants.NON_MEMBER_STR;
+import static com.dft.mom.domain.util.EntityConstants.*;
 import static com.dft.mom.web.exception.ExceptionType.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;

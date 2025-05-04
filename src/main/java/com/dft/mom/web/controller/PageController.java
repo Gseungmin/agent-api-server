@@ -71,10 +71,12 @@ public class PageController {
 
         if (type.equals(TYPE_PREGNANCY_GUIDE) || type.equals(TYPE_CHILDCARE_GUIDE)) {
             postService.createPost(file);
+            return;
         }
 
         if (type.equals(TYPE_CHILDCARE_NUTRITION) || type.equals(TYPE_PREGNANCY_NUTRITION)) {
             nutritionService.createNutrition(file, type);
+            return;
         }
 
         inspectionService.createInspection(file);

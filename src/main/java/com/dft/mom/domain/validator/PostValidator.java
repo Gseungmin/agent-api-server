@@ -33,6 +33,7 @@ public class PostValidator {
         validateTitle(dto.getTitle(), id);
         validateType(dto.getType(), id);
         validatePeriod(dto.getStartPeriod(), dto.getEndPeriod(), dto.getType(), id);
+        validatePostCategory(dto.getCategory(), id);
 
         if (dto.getCaution().equals(false)) {
             validateSummary(dto.getSummary(), id);
@@ -46,7 +47,7 @@ public class PostValidator {
         validateTag(dto.getTag(), id);
         validateNutritionCategory(dto.getCategory(), id);
 
-        if (!dto.getCategory().equals(B_B_CAUTION)) {
+        if (!dto.getCategory().equals(NUTRIENTS_CAUTION)) {
             validateSummary(dto.getSummary(), id);
         }
     }
@@ -125,8 +126,19 @@ public class PostValidator {
         }
     }
 
+    private static void validatePostCategory(Integer category, Long id) {
+        if (category == null ||
+                (!FETAL_GUIDE_CATEGORIES.contains(category) && (!BABY_GUIDE_CATEGORIES.contains(category)))) {
+            throw new PageException(
+                    PAGE_CATEGORY_INVALID.getCode(),
+                    "ID:" + id + " " + PAGE_CATEGORY_INVALID.getErrorMessage()
+            );
+        }
+    }
+
     private static void validateNutritionCategory(Integer category, Long id) {
-        if (category == null || !BIRTH_CATEGORIES.contains(category)) {
+        if (category == null ||
+                (!BABY_NUTRITION_CATEGORIES.contains(category) && (!FETAL_NUTRITION_CATEGORIES.contains(category)))) {
             throw new PageException(
                     PAGE_CATEGORY_INVALID.getCode(),
                     "ID:" + id + " " + PAGE_CATEGORY_INVALID.getErrorMessage()

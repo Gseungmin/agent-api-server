@@ -241,8 +241,8 @@ public class PageServiceTest extends ServiceTest {
         assertThat(페이지_조회.getPagePeriod()).isEqualTo(PERIOD_TOTAL);
         assertThat(카테고리리스트.size()).isEqualTo(2);
 
-        assertThat(카테고리2000.getCategory()).isEqualTo(2000);
-        assertThat(카테고리2002.getCategory()).isEqualTo(2002);
+        assertThat(카테고리2000.getCategory()).isEqualTo(NUTRIENTS);
+        assertThat(카테고리2002.getCategory()).isEqualTo(NUTRIENTS_CAUTION);
 
         assertThat(카테고리2000.getNutritionList().size()).isEqualTo(8);
         assertThat(카테고리2002.getNutritionList().size()).isEqualTo(5);
@@ -269,7 +269,7 @@ public class PageServiceTest extends ServiceTest {
         assertThat(페이지_조회.getPagePeriod()).isEqualTo(PERIOD_TOTAL);
         assertThat(카테고리리스트.size()).isEqualTo(1);
 
-        assertThat(카테고리3000.getCategory()).isEqualTo(3000);
+        assertThat(카테고리3000.getCategory()).isEqualTo(INSPECTION_AND_VACCINATIONS);
         assertThat(카테고리3000.getInspectionList().size()).isEqualTo(3);
     }
 
