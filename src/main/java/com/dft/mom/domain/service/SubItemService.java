@@ -55,8 +55,10 @@ public class SubItemService {
 
     /* Post 아이템 조회 */
     private ItemResponseDto getPostItem(Long itemId) {
+        System.out.println("START-GET-ITEM");
         List<SubItem> subItemList = subItemRepository.findSubItemListByPostId(itemId);
         if (subItemList.isEmpty()) {
+            System.out.println("PRE-END-ITEM");
             return null;
         }
 
@@ -65,6 +67,7 @@ public class SubItemService {
                 .toList();
 
         Post post = subItemList.get(0).getPost();
+        System.out.println("END-ITEM");
         return new ItemResponseDto(post, dtoList);
     }
 
